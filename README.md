@@ -2,8 +2,8 @@
 
 Quadro digital para formadores. Duas janelas no mesmo browser: a **TV** mostra cena, temporizador e vídeos/site; o **Controlo** edita tudo e comanda a TV em tempo real.
 
-![licença: MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)
-![versão: 2.0](https://img.shields.io/badge/vers%C3%A3o-2.0-f1-yellow)
+[![licença: MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)](LICENSE)
+[![versão: 2.0](https://img.shields.io/badge/vers%C3%A3o-2.0--f1-yellow)](#funcionalidades)
 
 ## Experimentar
 
@@ -11,7 +11,7 @@ Quadro digital para formadores. Duas janelas no mesmo browser: a **TV** mostra c
 
 Ou localmente:
 
-    git clone https://github.com/[utilizador]/palco.git
+    git clone https://github.com/100nome-criacoes/palco.git
     cd palco
     python3 -m http.server 8000
 

@@ -5,6 +5,8 @@ Quadro digital para formadores. Duas janelas no mesmo browser: a **TV** mostra c
 [![licença: MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)](LICENSE)
 [![versão: 2.0](https://img.shields.io/badge/vers%C3%A3o-2.0--f1-yellow)](#funcionalidades)
 
+![Palco a funcionar](docs/demo.gif)
+
 ## Experimentar
 
 **[Abrir Palco](https://criacoes.100nome.net/web/palco/)** — versão pública.

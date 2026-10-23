@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏱️</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/board.css">
+</head>
+<body>
+
+<!-- Botões mínimos no canto -->
+<button class="round-btn break-btn" id="breakBtn" title="Pausa (P)">
+    <i class="fas fa-mug-hot"></i>
+</button>
+<button class="round-btn fullscreen-btn" id="fullscreenBtn" title="Ecrã inteiro (F)">
+    <i class="fas fa-expand"></i>
+</button>
+<button class="round-btn gear-btn" id="gearBtn" title="Abrir controlo (G)">
+    <i class="fas fa-cog"></i>
+</button>
+
+<!-- Quadro -->
+<main class="board">
+    <header class="board-header">
+        <h1 class="scene-title" id="sceneTitle"></h1>
+        <div class="scene-subtext" id="sceneSubtext"></div>
+    </header>
+
+    <section class="board-media" id="boardMedia">
+        <div class="media-slot" id="mediaSlot1">
+            <div class="media-frame" id="mediaFrame1"></div>
+            <div class="media-empty" id="mediaEmpty1"><i class="fas fa-video"></i></div>
+        </div>
+        <div class="media-slot" id="mediaSlot2">
+            <div class="media-frame" id="mediaFrame2"></div>
+            <div class="media-empty" id="mediaEmpty2"><i class="fas fa-video"></i></div>
+        </div>
+        <div class="media-slot media-slot-site hidden" id="mediaSlotSite">
+            <div class="media-frame" id="mediaFrameSite"></div>
+            <div class="media-empty" id="mediaEmptySite"><i class="fas fa-globe"></i></div>
+        </div>
+    </section>
+</main>
+
+<!-- Timer compacto -->
+<div class="compact-timer hidden" id="compactTimer">
+    <div class="ct-handle" title="Arrastar (duplo clique: posição automática)"><i class="fas fa-grip-lines"></i></div>
+    <div class="ct-time" id="ctTime">10:00</div>
+    <div class="ct-controls">
+        <button class="ct-btn start" id="ctStart" title="Iniciar"><i class="fas fa-play"></i></button>
+        <button class="ct-btn pause" id="ctPause" title="Pausar" disabled><i class="fas fa-pause"></i></button>
+        <button class="ct-btn reset" id="ctReset" title="Repor o tempo"><i class="fas fa-redo"></i></button>
+    </div>
+</div>
+
+<!-- Timer grande -->
+<aside class="big-timer" id="bigTimer">
+    <div class="bt-handle" title="Arrastar"><i class="fas fa-grip-lines"></i></div>
+    <div class="bt-time" id="btTime">10:00</div>
+    <div class="bt-label">Tempo Restante</div>
+    <div class="bt-controls">
+        <button class="bt-btn start" id="btStart" title="Iniciar"><i class="fas fa-play"></i></button>
+        <button class="bt-btn pause" id="btPause" title="Pausar" disabled><i class="fas fa-pause"></i></button>
+        <button class="bt-btn reset" id="btReset" title="Repor o tempo"><i class="fas fa-redo"></i></button>
+    </div>
+</aside>
+
+<!-- Notificações -->
+<div class="notification" id="notification"></div>
+
+<div class="minute-notification" id="minuteNotification">
+    <div class="minute-notification-icon"><i class="fas fa-clock"></i></div>
+    <div class="minute-notification-text">&lt;1 Minuto!</div>
+    <div class="minute-notification-subtext">Prepara-te para terminar</div>
+</div>
+
+<div class="fullscreen-notification" id="fullscreenNotification">
+    <div class="fullscreen-notification-icon"><i class="fas fa-bell"></i></div>
+    <div class="fullscreen-notification-text">Tempo Terminado!</div>
+    <button class="fullscreen-notification-btn" id="closeFullscreenNotification">OK</button>
+</div>
+
+<div class="footer app-credits"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="js/app-info.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/scenes.js"></script>
+<script src="js/store.js"></script>
+<script src="js/sync.js"></script>
+<script src="js/notify.js"></script>
+<script src="js/timer.js"></script>
+<script src="js/draggable.js"></script>
+<script src="js/media.js"></script>
+<script src="js/board-view.js"></script>
+<script src="js/actions.js"></script>
+<script src="js/app-board.js"></script>
+</body>
+</html>

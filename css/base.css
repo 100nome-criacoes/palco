@@ -1,0 +1,117 @@
+/* =====================================================================
+ * Base — variáveis, reset, fontes, componentes comuns
+ * ===================================================================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg-app: #f2edb7;
+    --bg-break: #b7f2dc;
+    --green: #8cc249;
+    --green-dark: #7ab536;
+    --orange: #f15a31;
+    --orange-dark: #e04920;
+    --gray: #6c757d;
+    --danger: #dc3545;
+    --cyan: #17a2b8;
+    --amber: #ffc107;
+    --text-dark: #2c2c2c;
+    --text-muted: #6c757d;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--bg-app);
+    color: var(--text-dark);
+    transition: background-color .35s ease;
+}
+
+/* --- Botões circulares discretos (canto) --- */
+.round-btn {
+    position: fixed;
+    top: 14px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,.55);
+    color: #444;
+    font-size: 1rem;
+    cursor: pointer;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: .35;
+    transition: opacity .25s, background .25s, transform .2s;
+    backdrop-filter: blur(4px);
+}
+.round-btn:hover {
+    opacity: 1;
+    background: #fff;
+    transform: scale(1.05);
+    box-shadow: 0 4px 14px rgba(0,0,0,.15);
+}
+.round-btn.active { opacity: 1; background: var(--orange); color: #fff; }
+
+/* --- Notificações (toast) --- */
+.notification {
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--green);
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 10px;
+    box-shadow: 0 6px 24px rgba(0,0,0,.2);
+    font-weight: 600;
+    font-size: .9rem;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    gap: 10px;
+}
+.notification.visible {
+    display: flex;
+    animation: toastIn .2s ease both;
+}
+@keyframes toastIn {
+    from { opacity: 0; transform: translate(-50%, 8px); }
+    to   { opacity: 1; transform: translate(-50%, 0); }
+}
+.notification.timer { background: var(--orange); }
+.notification.warning { background: var(--amber); color: #333; }
+
+/* --- Markdown lists --- */
+.md-list-item {
+    display: inline-block;
+    text-align: left;
+    padding-left: 1.4em;
+    position: relative;
+    margin: 1px 0;
+}
+.md-list-item::before {
+    content: "◆";
+    position: absolute;
+    left: .25em;
+    font-size: .78em;
+    top: .15em;
+}
+
+/* Lista numerada: o número escrito, a negrito, com a cor do texto */
+.md-ordered { padding-left: 1.9em; }
+.md-ordered::before {
+    content: attr(data-n) ".";
+    left: 0;
+    top: 0;
+    font-size: 1em;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}

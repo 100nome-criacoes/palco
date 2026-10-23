@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controlo</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎛️</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/control.css">
+</head>
+<body class="control-body">
+
+<!-- ============================================================
+     CABEÇALHO
+     ============================================================ -->
+<header class="control-header">
+    <div class="ctrl-header-left">
+        <h1><i class="fas fa-sliders-h"></i> Controlo da Sessão</h1>
+        <div class="conn-status" id="connStatus">
+            <span class="conn-dot"></span>
+            <span class="conn-label">A ligar...</span>
+        </div>
+    </div>
+    <div class="ctrl-header-right">
+        <button class="ctrl-btn" id="openTvBtn">
+            <i class="fas fa-tv"></i> Abrir TV
+        </button>
+    </div>
+</header>
+
+<!-- ============================================================
+     CORPO
+     ============================================================ -->
+<div class="control-main">
+
+    <!-- ===================== ESQUERDA ===================== -->
+    <aside class="control-left">
+
+        <!-- Estado atual -->
+        <section class="ctrl-card">
+            <h2><i class="fas fa-eye"></i> Estado atual</h2>
+            <div class="current-state">
+                <div class="state-row">
+                    <label>Cena</label>
+                    <strong id="stateScene">—</strong>
+                </div>
+                <div class="state-row">
+                    <label>Temporizador</label>
+                    <strong id="stateTimer">—</strong>
+                </div>
+                <div class="state-row">
+                    <label>Apresentação</label>
+                    <strong id="stateMode">—</strong>
+                </div>
+            </div>
+            <div class="state-preview">
+                <div class="preview-title" id="previewTitle"></div>
+                <div class="preview-subtext" id="previewSubtext"></div>
+            </div>
+        </section>
+
+        <!-- Temporizador: comandos + configuração global -->
+        <section class="ctrl-card">
+            <h2><i class="fas fa-stopwatch"></i> Temporizador</h2>
+            <div class="remote-timer">
+                <div class="remote-time-wrap">
+                    <div class="remote-time" id="remoteTime">10:00</div>
+                    <div class="remote-status" id="remoteStatus">parado</div>
+                </div>
+                <div class="remote-controls">
+                    <button class="ctrl-btn big success" id="remoteStart">
+                        <i class="fas fa-play"></i> Iniciar
+                    </button>
+                    <button class="ctrl-btn big warn" id="remotePause">
+                        <i class="fas fa-pause"></i> Pausar
+                    </button>
+                    <button class="ctrl-btn ghost icon-btn" id="remoteReset" title="Repor o tempo">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    <button class="ctrl-btn alarm-btn" id="alarmBtn" title="Campainha (acende quando o tempo acaba — clica para calar)" disabled>
+                        <i class="fas fa-bell"></i>
+                    </button>
+                </div>
+                <div class="remote-presets">
+                    <span>Iniciar:</span>
+                    <button data-secs="300" class="preset-btn">5m</button>
+                    <button data-secs="600" class="preset-btn">10m</button>
+                    <button data-secs="900" class="preset-btn">15m</button>
+                    <button data-secs="1200" class="preset-btn">20m</button>
+                    <button data-secs="1800" class="preset-btn">30m</button>
+                </div>
+                <div class="remote-custom">
+                    <span>Personalizado:</span>
+                    <input type="text" id="customMinutes" class="ctrl-input small" placeholder="ex. 5:30" autocomplete="off">
+                    <button class="ctrl-btn small primary" id="applyCustomBtn">
+                        <i class="fas fa-play"></i> Iniciar
+                    </button>
+                    <span class="parse-hint" id="customPreview"></span>
+                </div>
+
+                <div class="remote-config">
+                    <div class="form-row">
+                        <label for="timerMinutes">Duração global <span class="label-note">· min ou min:seg</span></label>
+                        <div class="inline-controls">
+                            <input type="text" id="timerMinutes" class="ctrl-input small" value="15" autocomplete="off">
+                            <button class="ctrl-btn small primary" id="setTimerBtn">
+                                <i class="fas fa-check"></i> Definir
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label>Apresentação na TV</label>
+                        <div class="segmented" id="timerModeSegmented">
+                            <button data-timer-mode="big"><i class="fas fa-columns"></i> Coluna</button>
+                            <button data-timer-mode="compact"><i class="fas fa-window-restore"></i> Barra</button>
+                            <button data-timer-mode="hidden"><i class="fas fa-eye-slash"></i> Oculto</button>
+                        </div>
+                        <div class="hint">O tempo arranca sozinho ao entrar numa pausa. Uma cena com duração própria fica pronta (parada) ao entrar.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cenas rápidas -->
+        <section class="ctrl-card">
+            <h2><i class="fas fa-film"></i> Em direto <small class="h2-sub" id="quickGroupName"></small></h2>
+            <div class="quick-scenes" id="quickScenes"></div>
+        </section>
+
+    </aside>
+
+    <!-- ===================== DIREITA ===================== -->
+    <main class="control-right">
+
+        <!-- Editor de cenas (independente do que está na TV) -->
+        <section class="ctrl-section">
+            <h2>Editar cenas</h2>
+
+            <div class="form-row">
+                <label for="groupSelect">Grupo</label>
+                <div class="inline-controls group-controls">
+                    <select id="groupSelect" class="ctrl-input"></select>
+                    <button class="ctrl-btn small" id="renameGroupBtn" title="Mudar o nome do grupo">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                    <button class="ctrl-btn small" id="newGroupBtn" title="Novo grupo">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="ctrl-btn small" id="duplicateGroupBtn" title="Duplicar grupo (com todas as cenas)">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <button class="ctrl-btn small danger" id="deleteGroupBtn" title="Apagar grupo">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="ctrl-btn small" id="groupUpBtn" title="Subir grupo na lista">
+                        <i class="fas fa-arrow-up"></i>
+                    </button>
+                    <button class="ctrl-btn small" id="groupDownBtn" title="Descer grupo na lista">
+                        <i class="fas fa-arrow-down"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <label>Cenas do grupo <span class="label-note">· clica para editar (não mexe na TV) · arrasta para reordenar</span></label>
+                <div class="scene-list" id="sceneList"></div>
+            </div>
+
+            <div class="form-row actions">
+                <button class="ctrl-btn small" id="newSceneBtn">
+                    <i class="fas fa-plus"></i> Nova cena
+                </button>
+                <button class="ctrl-btn small" id="sceneUpBtn" title="Subir cena">
+                    <i class="fas fa-arrow-up"></i>
+                </button>
+                <button class="ctrl-btn small" id="sceneDownBtn" title="Descer cena">
+                    <i class="fas fa-arrow-down"></i>
+                </button>
+                <button class="ctrl-btn small danger" id="deleteSceneBtn">
+                    <i class="fas fa-trash"></i> Apagar
+                </button>
+            </div>
+
+            <div class="editor" id="sceneEditor">
+                <div class="editor-head">
+                    <div class="editor-title">
+                        A editar: <strong id="editorTitle">—</strong>
+                        <span class="badge-live hidden" id="editorLiveBadge">● em direto</span>
+                    </div>
+                    <button class="ctrl-btn small success" id="goLiveBtn">
+                        <i class="fas fa-tv"></i> Mostrar na TV
+                    </button>
+                </div>
+
+                <div class="form-row">
+                    <label for="nameInput">Nome e ícone</label>
+                    <div class="inline-controls">
+                        <input type="text" id="emojiInput" class="ctrl-input emoji-input" maxlength="8" placeholder="📌" title="Ícone (emoji)">
+                        <input type="text" id="nameInput" class="ctrl-input" maxlength="40" placeholder="Nome da cena">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label>Cor <span class="label-note">· o texto ajusta-se sozinho para se ler bem</span></label>
+                    <div class="inline-controls">
+                        <div class="swatches" id="themeSwatches"></div>
+                        <button class="ctrl-btn small ghost" id="resetColorBtn" title="Voltar à cor padrão desta cena">
+                            <i class="fas fa-undo"></i> Padrão
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-row checkbox-row">
+                    <label class="check">
+                        <input type="checkbox" id="sceneIsBreak">
+                        <span>Cena de pausa (centrada, sem vídeos; o tempo arranca ao entrar)</span>
+                    </label>
+                </div>
+
+                <div class="form-row">
+                    <label for="sceneDuration">Duração desta cena <span class="label-note">· min ou min:seg</span></label>
+                    <div class="inline-controls">
+                        <input type="text" id="sceneDuration" class="ctrl-input small" placeholder="global" autocomplete="off">
+                        <button class="ctrl-btn small ghost" id="sceneDurationClearBtn">
+                            <i class="fas fa-globe"></i> Usar global
+                        </button>
+                    </div>
+                    <div class="hint">Vazio = usa a duração global. Ao entrar na cena, o tempo é reposto para este valor (numa pausa, arranca logo).</div>
+                </div>
+
+                <div class="form-row">
+                    <label for="textInput">Texto principal</label>
+                    <textarea id="textInput" class="ctrl-textarea" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <label for="subtextInput">Texto auxiliar</label>
+                    <textarea id="subtextInput" class="ctrl-textarea" rows="3"></textarea>
+                    <div class="hint">Markdown: <code>**negrito**</code>, <code>*itálico*</code>, <code>- item</code>, <code>1. item</code></div>
+                </div>
+
+                <div class="form-row actions">
+                    <button class="ctrl-btn ghost" id="restoreTextBtn">
+                        <i class="fas fa-undo"></i> Restaurar texto original
+                    </button>
+                    <span class="hint">Os textos guardam-se enquanto escreves.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Media -->
+        <section class="ctrl-section">
+            <h2>Vídeos e site</h2>
+
+            <div class="form-row">
+                <label>Modo de exibição</label>
+                <div class="segmented" id="layoutSegmented">
+                    <button data-layout="double"><i class="fas fa-th-large"></i> 2 vídeos</button>
+                    <button data-layout="single"><i class="fas fa-square"></i> 1 vídeo</button>
+                    <button data-layout="site"><i class="fas fa-globe"></i> Site</button>
+                    <button data-layout="timer"><i class="fas fa-clock"></i> Só tempo</button>
+                </div>
+                <div class="hint">Os vídeos tocam sozinhos (com repetição) quando ficam visíveis e param quando deixam de estar.</div>
+            </div>
+
+            <div class="form-row">
+                <label for="video1Url">Vídeo 1 <span class="label-note">· o que aparece no modo "1 vídeo"</span></label>
+                <div class="inline-controls">
+                    <input type="text" id="video1Url" class="ctrl-input" placeholder="URL do YouTube">
+                    <button class="ctrl-btn small mute-btn" data-toggle-mute="1" title="Som do vídeo 1">
+                        <i class="fas fa-volume-xmark"></i>
+                    </button>
+                    <button class="ctrl-btn small primary" data-save-video="1" title="Guardar">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button class="ctrl-btn small danger" data-remove-video="1" title="Remover">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-row swap-row">
+                <button class="ctrl-btn small ghost" id="swapVideosBtn" title="Troca os dois vídeos (o som acompanha cada vídeo)">
+                    <i class="fas fa-right-left fa-rotate-90"></i> Trocar vídeo 1 ↔ 2
+                </button>
+            </div>
+
+            <div class="form-row">
+                <label for="video2Url">Vídeo 2</label>
+                <div class="inline-controls">
+                    <input type="text" id="video2Url" class="ctrl-input" placeholder="URL do YouTube">
+                    <button class="ctrl-btn small mute-btn" data-toggle-mute="2" title="Som do vídeo 2">
+                        <i class="fas fa-volume-xmark"></i>
+                    </button>
+                    <button class="ctrl-btn small primary" data-save-video="2" title="Guardar">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button class="ctrl-btn small danger" data-remove-video="2" title="Remover">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <label for="siteUrl">Site / Apresentação</label>
+                <div class="inline-controls">
+                    <input type="text" id="siteUrl" class="ctrl-input" placeholder="Google Slides, site...">
+                    <button class="ctrl-btn small primary" data-save-site title="Guardar">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    <button class="ctrl-btn small danger" data-remove-site title="Remover">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="hint">Google Slides: <b>Ficheiro → Publicar na Web → Embed</b> (podes colar o código todo).</div>
+            </div>
+
+            <div class="form-row">
+                <label>Escala <span class="label-note" id="scaleModeLabel"></span></label>
+                <div class="segmented" id="scaleSegmented">
+                    <button data-scale="fit">Ajustar</button>
+                    <button data-scale="fill">Preencher</button>
+                    <button data-scale="cover">Cobrir</button>
+                </div>
+                <div class="hint">Cada modo lembra a sua escala. Clica na que está marcada com "padrão" para a repor.</div>
+            </div>
+        </section>
+
+        <!-- Sistema -->
+        <section class="ctrl-section">
+            <h2>Sistema</h2>
+
+            <div class="form-row actions">
+                <button class="ctrl-btn" id="exportBtn">
+                    <i class="fas fa-download"></i> Exportar
+                </button>
+                <button class="ctrl-btn" id="importBtn">
+                    <i class="fas fa-upload"></i> Importar
+                </button>
+            </div>
+
+            <div class="form-row actions">
+                <button class="ctrl-btn danger" id="resetAllBtn">
+                    <i class="fas fa-exclamation-triangle"></i> Repor valores de origem
+                </button>
+            </div>
+
+            <div class="hint">
+                Atalhos: <code>P</code> pausa · <code>Espaço</code> iniciar/pausar tempo · <code>← →</code> cena anterior/seguinte · <code>F</code>ecrã inteiro (na janela da TV)</div>
+        </section>
+
+    </main>
+</div>
+
+<footer class="control-footer app-credits"></footer>
+
+<input type="file" id="importFile" accept="application/json" style="display:none;">
+<div class="notification" id="notification"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="js/app-info.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/scenes.js"></script>
+<script src="js/store.js"></script>
+<script src="js/sync.js"></script>
+<script src="js/notify.js"></script>
+<script src="js/actions.js"></script>
+<script src="js/app-control.js"></script>
+</body>
+</html>

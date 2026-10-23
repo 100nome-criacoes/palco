@@ -26,7 +26,7 @@ jobs:
         run: |
           git clone --branch main "https://x-access-token:${TOKEN}@github.com/100nome-criacoes/site-source.git" /tmp/dest
           mkdir -p /tmp/dest/web/palco
-          rsync -a --delete --exclude='.git' --exclude='.github' ./ /tmp/dest/web/palco/
+          rsync -a --delete --exclude='.git' --exclude='.github' --exclude='.gitignore' ./ /tmp/dest/web/palco/
           cd /tmp/dest
           git config user.name "100nome-criacoes-sync[bot]"
           git config user.email "${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com"

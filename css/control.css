@@ -737,10 +737,23 @@
  * Rodapé
  * ===================================================================== */
 .control-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     padding: 4px 24px 24px;
-    text-align: center;
     font-size: .72rem;
     color: #aaa;
+}
+.repo-link {
+    color: inherit;
+    font-size: 1rem;
+    opacity: .8;
+    transition: opacity .2s, color .2s;
+}
+.repo-link:hover {
+    opacity: 1;
+    color: var(--text-dark);
 }
 
 /* Marca o valor padrão numa lista de opções (ex.: escala de cada modo) */

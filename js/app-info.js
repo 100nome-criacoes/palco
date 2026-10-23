@@ -14,6 +14,7 @@ const APP_INFO = {
     author: 'João Frade',
     version: 'v2.0-f1',
     codename: 'Quadro',
+    repo: 'https://github.com/100nome-criacoes/palco',
 
     get credits() { return `${this.author} | ${this.name} ${this.version} "${this.codename}"`; },
 

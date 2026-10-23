@@ -22,6 +22,7 @@ const AppControl = {
     init() {
         document.title = `${APP_INFO.name} — Controlo`;
         $('.app-credits').text(APP_INFO.credits);
+        $('#repoLink').attr('href', APP_INFO.repo);
         const state = Store.init();
         this.editingId = state.activeSceneId;
 

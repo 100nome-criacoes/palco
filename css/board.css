@@ -94,10 +94,8 @@ body.compact-auto .board-media { margin-top: calc(var(--compact-gap, 22px) + 36p
     justify-content: stretch;
     border-radius: 14px;
     overflow: hidden;
-    background: rgba(255,255,255,.4);
     position: relative;
     min-height: 0;
-    box-shadow: 0 6px 20px rgba(0,0,0,.06);
 }
 .media-slot-site { display: none; }
 .media-slot-site.hidden { display: none; }
@@ -121,9 +119,11 @@ body.compact-auto .board-media { margin-top: calc(var(--compact-gap, 22px) + 36p
     display: flex;
     align-items: center;
     justify-content: center;
+    background: rgba(255,255,255,.4);
     color: rgba(0,0,0,.15);
     font-size: 3rem;
     pointer-events: none;
+    box-shadow: 0 6px 20px rgba(0,0,0,.06);
 }
 .media-empty.hidden { display: none; }
 

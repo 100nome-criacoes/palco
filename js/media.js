@@ -65,7 +65,9 @@ const Media = {
         const $iframe = $('<iframe>').attr({
             src,
             allow: 'autoplay; fullscreen; encrypted-media',
-            allowfullscreen: ''
+            allowfullscreen: '',
+            allowtransparency: 'true',
+            style: 'border:none; background:transparent;'
         });
         if (typeof slot === 'number') {
             $iframe.on('load', () => this._pushWithRetries(slot));

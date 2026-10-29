@@ -6,7 +6,6 @@
 <title>Carrossel</title>
 <style>
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: sans-serif; background: transparent; }
 
   html, body {
     margin: 0;
@@ -126,10 +125,10 @@
 
   let slides = [];
   let current = 0;
-  let autoplayTimer = null;
+  let autoplayTimer = null; // ⚠️ declarado UMA só vez
 
   async function init() {
-      if (!API_URL) {
+    if (!API_URL) {
       carousel.innerHTML = '<div class="carousel-empty">Parâmetro <code>?api=</code> em falta no URL.</div>';
       return;
     }
@@ -138,7 +137,6 @@
       const res = await fetch(API_URL);
       const data = await res.json();
 
-      // Filtrar itens de erro e sem imagem
       slides = data.filter(item => !item.error && item.imageUrl);
 
       if (slides.length === 0) {
@@ -148,6 +146,7 @@
 
       render();
       goTo(0);
+      startAutoplay(); // ⚠️ arranca o autoplay
 
     } catch (err) {
       carousel.innerHTML = '<div class="carousel-empty">Erro ao carregar o carrossel.</div>';
@@ -186,10 +185,8 @@
   function next() { goTo(current + 1); }
   function prev() { goTo(current - 1); }
 
-  let autoplayTimer = null;
-
   function startAutoplay() {
-    stopAutoplay(); // garante que não há timer antigo
+    stopAutoplay();
     if (AUTOPLAY_MS <= 0 || slides.length < 2) return;
     autoplayTimer = setInterval(() => {
       goTo(current + 1);
@@ -214,7 +211,11 @@
   carousel.addEventListener('mouseenter', stopAutoplay);
   carousel.addEventListener('mouseleave', startAutoplay);
 
-  // Suporte a swipe em touch
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopAutoplay();
+    else startAutoplay();
+  });
+
   let touchStartX = null;
   carousel.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
   carousel.addEventListener('touchend', e => {

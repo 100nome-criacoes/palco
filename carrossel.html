@@ -8,14 +8,22 @@
   * { box-sizing: border-box; }
   body { margin: 0; font-family: sans-serif; background: transparent; }
 
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+  }
+
   .carousel {
     position: relative;
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
-    border-radius: 12px;
-    background: #f0f0f0;
+    border-radius: 0;
+    background: #000;
   }
 
   .carousel-track {
@@ -26,18 +34,18 @@
 
   .carousel-slide {
     flex: 0 0 100%;
-    width: 100%;
-    aspect-ratio: 16 / 9;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #e8e8e8;
+    background: #000;
   }
 
   .carousel-slide img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain; /* ou 'cover' se quiser preencher sem barras */
     display: block;
   }
 
@@ -140,7 +148,6 @@
 
       render();
       goTo(0);
-      startAutoplay();
 
     } catch (err) {
       carousel.innerHTML = '<div class="carousel-empty">Erro ao carregar o carrossel.</div>';
@@ -179,13 +186,21 @@
   function next() { goTo(current + 1); }
   function prev() { goTo(current - 1); }
 
+  let autoplayTimer = null;
+
   function startAutoplay() {
+    stopAutoplay(); // garante que não há timer antigo
     if (AUTOPLAY_MS <= 0 || slides.length < 2) return;
-    autoplayTimer = setInterval(next, AUTOPLAY_MS);
+    autoplayTimer = setInterval(() => {
+      goTo(current + 1);
+    }, AUTOPLAY_MS);
   }
 
   function stopAutoplay() {
-    if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; }
+    if (autoplayTimer !== null) {
+      clearInterval(autoplayTimer);
+      autoplayTimer = null;
+    }
   }
 
   function restartAutoplay() {

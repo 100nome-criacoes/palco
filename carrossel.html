@@ -105,8 +105,8 @@
 </div>
 
 <script>
-  // ⚠️ Substitua pelo URL da sua aplicação web do Apps Script
-  const API_URL = "COLE_AQUI_O_URL_DA_SUA_APLICACAO_WEB";
+  const params = new URLSearchParams(window.location.search);
+  const API_URL = params.get('api');
 
   const AUTOPLAY_MS = 4000; // tempo entre slides (0 para desativar)
 
@@ -121,6 +121,11 @@
   let autoplayTimer = null;
 
   async function init() {
+      if (!API_URL) {
+      carousel.innerHTML = '<div class="carousel-empty">Parâmetro <code>?api=</code> em falta no URL.</div>';
+      return;
+    }
+
     try {
       const res = await fetch(API_URL);
       const data = await res.json();

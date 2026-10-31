@@ -88,6 +88,11 @@ body.compact-auto .board-media { margin-top: calc(var(--compact-gap, 22px) + 36p
 .board-media.site .media-slot#mediaSlot2 { display: none; }
 .board-media.site .media-slot-site { display: flex; grid-column: 1 / -1; }
 
+/* Modo Imagens: mesmo espaço do site; o fundo é transparente, por isso o da cena vê-se por trás */
+.board-media.images .media-slot#mediaSlot1,
+.board-media.images .media-slot#mediaSlot2 { display: none; }
+.board-media.images .media-slot-images { display: flex; grid-column: 1 / -1; }
+
 .media-slot {
     display: flex;
     align-items: stretch;
@@ -97,7 +102,30 @@ body.compact-auto .board-media { margin-top: calc(var(--compact-gap, 22px) + 36p
     position: relative;
     min-height: 0;
 }
-.media-slot-site { display: none; }
+.media-slot-site,
+.media-slot-images { display: none; }
+
+/* A própria imagem (não só o espaço) tem os cantos arredondados, como os vídeos.
+   Em "ajustar" o tamanho vem da proporção (--ar, posta pelo JS) e do espaço disponível. */
+.slideshow { position: absolute; inset: 0; container-type: size; }
+.slideshow .slide {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(100cqw, calc(100cqh * var(--ar, 1.7778)));
+    aspect-ratio: var(--ar, 1.7778);
+    border-radius: 14px;
+    opacity: 0;
+    transition: opacity .6s ease;
+}
+.slideshow.cover .slide {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    object-fit: cover;
+}
+.slideshow .slide.on { opacity: 1; }
 .media-slot-site.hidden { display: none; }
 
 .media-frame { position: absolute; inset: 0; overflow: hidden; }
@@ -461,7 +489,8 @@ body.layout-timer .bt-btn.reset  { color: var(--gray); }
     position: fixed;
     bottom: 6px; right: 10px;
     font-size: .68rem;
-    color: rgba(0,0,0,.3);
+    color: var(--scene-muted, #6c757d);
+    opacity: .5;
     font-weight: 400;
     z-index: 100;
     pointer-events: none;

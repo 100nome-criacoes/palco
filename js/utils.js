@@ -45,14 +45,17 @@ const Utils = {
 
     /**
      * Lê uma duração escrita pelo utilizador → segundos (ou null se inválida).
-     *   "5" = 5 min · "5:30" = 5 min 30 s · "5:3" = 5 min 3 s · "0:45" = 45 s
+     *   "5" = 5 min · "5:" = 5 min · "5:30" = 5 min 30 s · "5:3" = 5 min 3 s
+     *   ":30" = 30 s · "0:45" = 45 s
+     * Aceita o texto a meio de ser escrito ("5:" ou ":3"), como nos programas comuns.
      */
     parseDuration(input, maxMinutes = 180) {
-        const m = String(input == null ? '' : input).trim().match(/^(\d{1,3})(?::(\d{1,2}))?$/);
-        if (!m) return null;
-        const secs = m[2] === undefined ? 0 : parseInt(m[2], 10);
+        const m = String(input == null ? '' : input).trim().match(/^(\d{1,3})?(?::(\d{0,2}))?$/);
+        if (!m || (m[1] === undefined && !m[2])) return null;          // nada numérico ("" ou ":")
+        const mins = m[1] ? parseInt(m[1], 10) : 0;
+        const secs = m[2] ? parseInt(m[2], 10) : 0;
         if (secs > 59) return null;
-        const total = parseInt(m[1], 10) * 60 + secs;
+        const total = mins * 60 + secs;
         return (total > 0 && total <= maxMinutes * 60) ? total : null;
     },
 
@@ -60,6 +63,14 @@ const Utils = {
     formatDuration(seconds) {
         const s = Math.round(seconds);
         return s % 60 === 0 ? String(s / 60) : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    },
+
+    /** 1536 → "1,5 KB" · 8808038 → "8,4 MB" */
+    formatBytes(bytes) {
+        const n = Math.max(0, Number(bytes) || 0);
+        if (n < 1024) return `${Math.round(n)} B`;
+        if (n < 1048576) return `${(n / 1024).toFixed(1).replace('.', ',')} KB`;
+        return `${(n / 1048576).toFixed(1).replace('.', ',')} MB`;
     },
 
     /** 125 → "02:05" */
@@ -83,14 +94,27 @@ const Utils = {
 
     /**
      * Embed pensado para a TV: arranca sozinho e em silêncio (único modo que os
-     * browsers deixam), repete, e aceita comandos (mute/play/pause) via postMessage.
+     * navegadores deixam), repete, e aceita comandos (mute/play/pause) via postMessage.
      */
-    youtubeEmbed(videoId) {
+    youtubeEmbed(videoId, startSeconds = 0, autoplay = true) {
         const q = [
-            'autoplay=1', 'mute=1', 'loop=1', `playlist=${videoId}`,
+            `autoplay=${autoplay ? 1 : 0}`, 'mute=1', 'loop=1', `playlist=${videoId}`, `start=${Math.max(0, Math.floor(startSeconds))}`,
             'rel=0', 'modestbranding=1', 'playsinline=1', 'enablejsapi=1'
         ].join('&');
         return `https://www.youtube.com/embed/${videoId}?${q}`;
+    },
+
+    /**
+     * Tempo atual (segundos) numa mensagem do leitor do YouTube, ou null se a mensagem
+     * não for isso. O leitor envia estas mensagens depois de lhe dizermos que estamos a ouvir.
+     */
+    youtubeTime(data) {
+        let msg = data;
+        if (typeof data === 'string') {
+            try { msg = JSON.parse(data); } catch (e) { return null; }
+        }
+        const t = msg && msg.event === 'infoDelivery' && msg.info && msg.info.currentTime;
+        return Number.isFinite(t) && t >= 0 ? t : null;
     },
 
     /**

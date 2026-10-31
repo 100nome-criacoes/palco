@@ -38,30 +38,38 @@
     <!-- ===================== ESQUERDA ===================== -->
     <aside class="control-left">
 
-        <!-- Estado atual -->
-        <section class="ctrl-card">
-            <h2><i class="fas fa-eye"></i> Estado atual</h2>
-            <div class="current-state">
-                <div class="state-row">
-                    <label>Cena</label>
-                    <strong id="stateScene">—</strong>
-                </div>
-                <div class="state-row">
-                    <label>Temporizador</label>
-                    <strong id="stateTimer">—</strong>
-                </div>
-                <div class="state-row">
-                    <label>Apresentação</label>
-                    <strong id="stateMode">—</strong>
+        <!-- Pré-visualização da TV -->
+        <section class="ctrl-card preview-card">
+            <h2><i class="fas fa-tv"></i> Na TV agora</h2>
+
+            <div class="mini-tv" id="miniTv" aria-label="Pré-visualização da TV (1080p)">
+                <div class="mini-stage">
+                    <div class="mini-board">
+                        <div class="mini-header" id="miniHeader">
+                            <div class="mini-title" id="previewTitle"></div>
+                            <div class="mini-sub" id="previewSubtext"></div>
+                        </div>
+                        <div class="mini-media" id="miniMedia"></div>
+                    </div>
+                    <div class="mini-big" id="miniBig">
+                        <div class="mini-time"></div>
+                        <div class="mini-label">Tempo restante</div>
+                        <div class="mini-ctrls"><i class="go"></i><i class="warn"></i><i class="idle"></i></div>
+                    </div>
+                    <div class="mini-compact" id="miniCompact">
+                        <div class="mini-time"></div>
+                        <div class="mini-ctrls"><i class="go"></i><i class="warn"></i><i class="idle"></i></div>
+                    </div>
                 </div>
             </div>
-            <div class="state-preview">
-                <div class="preview-title" id="previewTitle"></div>
-                <div class="preview-subtext" id="previewSubtext"></div>
+
+            <div class="preview-caption">
+                <strong id="stateScene">-</strong>
+                <span id="stateTimer">-</span>
             </div>
         </section>
 
-        <!-- Temporizador: comandos + configuração global -->
+        <!-- Temporizador -->
         <section class="ctrl-card">
             <h2><i class="fas fa-stopwatch"></i> Temporizador</h2>
             <div class="remote-timer">
@@ -69,57 +77,56 @@
                     <div class="remote-time" id="remoteTime">10:00</div>
                     <div class="remote-status" id="remoteStatus">parado</div>
                 </div>
+
                 <div class="remote-controls">
-                    <button class="ctrl-btn big success" id="remoteStart">
-                        <i class="fas fa-play"></i> Iniciar
+                    <button class="ctrl-btn big success" id="remoteToggle" disabled>
+                        <i class="fas fa-play"></i> <span>Iniciar</span>
                     </button>
-                    <button class="ctrl-btn big warn" id="remotePause">
-                        <i class="fas fa-pause"></i> Pausar
-                    </button>
-                    <button class="ctrl-btn ghost icon-btn" id="remoteReset" title="Repor o tempo">
+                    <button class="ctrl-btn ghost icon-btn" id="remoteReset" title="Repor o tempo" disabled>
                         <i class="fas fa-redo"></i>
                     </button>
-                    <button class="ctrl-btn alarm-btn" id="alarmBtn" title="Campainha (acende quando o tempo acaba — clica para calar)" disabled>
+                    <button class="ctrl-btn alarm-btn" id="alarmBtn" title="Campainha (acende quando o tempo acaba, clica para calar)" disabled>
                         <i class="fas fa-bell"></i>
                     </button>
                 </div>
-                <div class="remote-presets">
-                    <span>Iniciar:</span>
-                    <button data-secs="300" class="preset-btn">5m</button>
-                    <button data-secs="600" class="preset-btn">10m</button>
-                    <button data-secs="900" class="preset-btn">15m</button>
-                    <button data-secs="1200" class="preset-btn">20m</button>
-                    <button data-secs="1800" class="preset-btn">30m</button>
-                </div>
-                <div class="remote-custom">
-                    <span>Personalizado:</span>
-                    <input type="text" id="customMinutes" class="ctrl-input small" placeholder="ex. 5:30" autocomplete="off">
-                    <button class="ctrl-btn small primary" id="applyCustomBtn">
-                        <i class="fas fa-play"></i> Iniciar
-                    </button>
-                    <span class="parse-hint" id="customPreview"></span>
+
+                <div class="quick-start">
+                    <button data-secs="300" class="preset-btn" title="Iniciar 5 minutos">5m</button>
+                    <button data-secs="600" class="preset-btn" title="Iniciar 10 minutos">10m</button>
+                    <button data-secs="900" class="preset-btn" title="Iniciar 15 minutos">15m</button>
+                    <button data-secs="1200" class="preset-btn" title="Iniciar 20 minutos">20m</button>
+                    <button data-secs="1800" class="preset-btn" title="Iniciar 30 minutos">30m</button>
+                    <div class="custom-start">
+                        <input type="text" id="customMinutes" class="ctrl-input" placeholder="5:30" autocomplete="off"
+                               title="Minutos (5) ou min:seg (5:30). Enter para iniciar">
+                        <button id="applyCustomBtn" title="Iniciar com este tempo" disabled>
+                            <i class="fas fa-play"></i><span id="customPreview"></span>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="remote-config">
-                    <div class="form-row">
-                        <label for="timerMinutes">Duração global <span class="label-note">· min ou min:seg</span></label>
-                        <div class="inline-controls">
-                            <input type="text" id="timerMinutes" class="ctrl-input small" value="15" autocomplete="off">
-                            <button class="ctrl-btn small primary" id="setTimerBtn">
-                                <i class="fas fa-check"></i> Definir
-                            </button>
+                <details class="collapsible" id="timerConfig">
+                    <summary>
+                        <span class="sum-title"><i class="fas fa-sliders-h"></i> Configuração</span>
+                        <span class="sum-meta" id="timerConfigMeta"></span>
+                    </summary>
+                    <div class="collapsible-body">
+                        <div class="cfg-row">
+                            <label for="timerMinutes">Duração global</label>
+                            <input type="text" id="timerMinutes" class="ctrl-input small" value="15" autocomplete="off"
+                                   title="Minutos (15) ou min:seg (7:30). Guarda ao sair do campo ou com Enter">
+                            <span class="unit">min</span>
+                        </div>
+                        <div class="form-row">
+                            <label>Aparência padrão</label>
+                            <div class="segmented small" id="timerDefaultSegmented">
+                                <button data-timer-mode="big"><i class="fas fa-columns"></i> Coluna</button>
+                                <button data-timer-mode="compact"><i class="fas fa-window-restore"></i> Barra</button>
+                                <button data-timer-mode="hidden"><i class="fas fa-eye-slash"></i> Oculto</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <label>Apresentação na TV</label>
-                        <div class="segmented" id="timerModeSegmented">
-                            <button data-timer-mode="big"><i class="fas fa-columns"></i> Coluna</button>
-                            <button data-timer-mode="compact"><i class="fas fa-window-restore"></i> Barra</button>
-                            <button data-timer-mode="hidden"><i class="fas fa-eye-slash"></i> Oculto</button>
-                        </div>
-                        <div class="hint">O tempo arranca sozinho ao entrar numa pausa. Uma cena com duração própria fica pronta (parada) ao entrar.</div>
-                    </div>
-                </div>
+                </details>
             </div>
         </section>
 
@@ -186,7 +193,7 @@
             <div class="editor" id="sceneEditor">
                 <div class="editor-head">
                     <div class="editor-title">
-                        A editar: <strong id="editorTitle">—</strong>
+                        A editar: <strong id="editorTitle">-</strong>
                         <span class="badge-live hidden" id="editorLiveBadge">● em direto</span>
                     </div>
                     <button class="ctrl-btn small success" id="goLiveBtn">
@@ -217,6 +224,16 @@
                         <input type="checkbox" id="sceneIsBreak">
                         <span>Cena de pausa (centrada, sem vídeos; o tempo arranca ao entrar)</span>
                     </label>
+                </div>
+
+                <div class="form-row" id="sceneTimerRow">
+                    <label>Temporizador nesta cena <span class="label-note">· como aparece na TV</span></label>
+                    <div class="segmented small" id="sceneTimerSegmented">
+                        <button data-scene-timer="inherit">Padrão</button>
+                        <button data-scene-timer="big"><i class="fas fa-columns"></i> Coluna</button>
+                        <button data-scene-timer="compact"><i class="fas fa-window-restore"></i> Barra</button>
+                        <button data-scene-timer="hidden"><i class="fas fa-eye-slash"></i> Oculto</button>
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -251,7 +268,7 @@
 
         <!-- Media -->
         <section class="ctrl-section">
-            <h2>Vídeos e site</h2>
+            <h2>Vídeos, site e imagens</h2>
 
             <div class="form-row">
                 <label>Modo de exibição</label>
@@ -259,6 +276,7 @@
                     <button data-layout="double"><i class="fas fa-th-large"></i> 2 vídeos</button>
                     <button data-layout="single"><i class="fas fa-square"></i> 1 vídeo</button>
                     <button data-layout="site"><i class="fas fa-globe"></i> Site</button>
+                    <button data-layout="images"><i class="fas fa-images"></i> Imagens</button>
                     <button data-layout="timer"><i class="fas fa-clock"></i> Só tempo</button>
                 </div>
                 <div class="hint">Os vídeos tocam sozinhos (com repetição) quando ficam visíveis e param quando deixam de estar.</div>
@@ -266,18 +284,22 @@
 
             <div class="form-row">
                 <label for="video1Url">Vídeo 1 <span class="label-note">· o que aparece no modo "1 vídeo"</span></label>
-                <div class="inline-controls">
-                    <input type="text" id="video1Url" class="ctrl-input" placeholder="URL do YouTube">
+                <div class="inline-controls link-field" data-link="video1">
+                    <div class="input-wrap">
+                        <input type="text" id="video1Url" class="ctrl-input" placeholder="Cola o URL do YouTube" autocomplete="off">
+                        <span class="link-status"></span>
+                    </div>
                     <button class="ctrl-btn small mute-btn" data-toggle-mute="1" title="Som do vídeo 1">
                         <i class="fas fa-volume-xmark"></i>
                     </button>
-                    <button class="ctrl-btn small primary" data-save-video="1" title="Guardar">
-                        <i class="fas fa-check"></i>
+                    <button class="ctrl-btn small" data-toggle-play="1" title="Pausar ou continuar o vídeo 1">
+                        <i class="fas fa-pause"></i>
                     </button>
-                    <button class="ctrl-btn small danger" data-remove-video="1" title="Remover">
+                    <button class="ctrl-btn small danger" data-link-remove title="Remover o vídeo 1">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
+                <div class="field-msg" data-link-msg></div>
             </div>
 
             <div class="form-row swap-row">
@@ -288,33 +310,75 @@
 
             <div class="form-row">
                 <label for="video2Url">Vídeo 2</label>
-                <div class="inline-controls">
-                    <input type="text" id="video2Url" class="ctrl-input" placeholder="URL do YouTube">
+                <div class="inline-controls link-field" data-link="video2">
+                    <div class="input-wrap">
+                        <input type="text" id="video2Url" class="ctrl-input" placeholder="Cola o URL do YouTube" autocomplete="off">
+                        <span class="link-status"></span>
+                    </div>
                     <button class="ctrl-btn small mute-btn" data-toggle-mute="2" title="Som do vídeo 2">
                         <i class="fas fa-volume-xmark"></i>
                     </button>
-                    <button class="ctrl-btn small primary" data-save-video="2" title="Guardar">
-                        <i class="fas fa-check"></i>
+                    <button class="ctrl-btn small" data-toggle-play="2" title="Pausar ou continuar o vídeo 2">
+                        <i class="fas fa-pause"></i>
                     </button>
-                    <button class="ctrl-btn small danger" data-remove-video="2" title="Remover">
+                    <button class="ctrl-btn small danger" data-link-remove title="Remover o vídeo 2">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
+                <div class="field-msg" data-link-msg></div>
             </div>
 
             <div class="form-row">
                 <label for="siteUrl">Site / Apresentação</label>
-                <div class="inline-controls">
-                    <input type="text" id="siteUrl" class="ctrl-input" placeholder="Google Slides, site...">
-                    <button class="ctrl-btn small primary" data-save-site title="Guardar">
-                        <i class="fas fa-check"></i>
-                    </button>
-                    <button class="ctrl-btn small danger" data-remove-site title="Remover">
+                <div class="inline-controls link-field" data-link="site">
+                    <div class="input-wrap">
+                        <input type="text" id="siteUrl" class="ctrl-input" placeholder="Cola o URL (Google Slides, site...)" autocomplete="off">
+                        <span class="link-status"></span>
+                    </div>
+                    <button class="ctrl-btn small danger" data-link-remove title="Remover o site">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
-                <div class="hint">Google Slides: <b>Ficheiro → Publicar na Web → Embed</b> (podes colar o código todo).</div>
+                <div class="field-msg" data-link-msg></div>
+                <div class="hint">Google Slides: <b>Ficheiro → Publicar na Web → Embed</b> (podes colar o código todo). Guarda ao colar, ao carregar em Enter ou ao sair do campo.</div>
             </div>
+
+            <details class="collapsible" id="imagesBlock">
+                <summary>
+                    <span class="sum-title"><i class="fas fa-images"></i> Imagens</span>
+                    <span class="sum-meta" id="galleryUsage">Sem imagens</span>
+                </summary>
+                <div class="collapsible-body">
+                    <div class="dropzone" id="imageDrop" tabindex="0">
+                        <i class="fas fa-cloud-arrow-up dz-icon"></i>
+                        <span class="dz-text">Arrasta imagens ou uma pasta para aqui</span>
+                        <div class="dz-actions">
+                            <button class="ctrl-btn small" id="pickImagesBtn"><i class="fas fa-file-image"></i> Imagens</button>
+                            <button class="ctrl-btn small" id="pickFolderBtn"><i class="fas fa-folder-open"></i> Pasta</button>
+                        </div>
+                    </div>
+                    <input type="file" id="imageFiles" accept="image/*" multiple hidden>
+                    <input type="file" id="imageFolder" webkitdirectory hidden>
+
+                    <div class="thumb-grid" id="thumbGrid"></div>
+
+                    <div class="gallery-row">
+                        <label for="galleryInterval">Passar a cada</label>
+                        <input type="number" id="galleryInterval" class="ctrl-input small" min="2" max="300">
+                        <span class="unit">s</span>
+                        <div class="gallery-transport">
+                            <button class="ctrl-btn small" id="galleryPrev" title="Imagem anterior"><i class="fas fa-backward-step"></i></button>
+                            <button class="ctrl-btn small" id="galleryToggle" title="Pausar ou continuar"><i class="fas fa-pause"></i></button>
+                            <button class="ctrl-btn small" id="galleryNext" title="Imagem seguinte"><i class="fas fa-forward-step"></i></button>
+                            <span class="gallery-counter" id="galleryCounter"></span>
+                        </div>
+                        <button class="ctrl-btn small danger push-right" id="clearImagesBtn" title="Apagar todas as imagens">
+                            <i class="fas fa-trash"></i> Apagar todas
+                        </button>
+                    </div>
+                    <div class="hint">Cópia reduzida, guardada só neste navegador. Ao remover, é apagada. Não vai na exportação.</div>
+                </div>
+            </details>
 
             <div class="form-row">
                 <label>Escala <span class="label-note" id="scaleModeLabel"></span></label>
@@ -323,7 +387,7 @@
                     <button data-scale="fill">Preencher</button>
                     <button data-scale="cover">Cobrir</button>
                 </div>
-                <div class="hint">Cada modo lembra a sua escala. Clica na que está marcada com "padrão" para a repor.</div>
+                <div class="hint">Cada modo lembra a sua escala e tem uma escala padrão (marcada).</div>
             </div>
         </section>
 
@@ -347,18 +411,20 @@
             </div>
 
             <div class="hint">
-                Atalhos: <code>P</code> pausa · <code>Espaço</code> iniciar/pausar tempo · <code>← →</code> cena anterior/seguinte · <code>F</code>ecrã inteiro (na janela da TV)</div>
+                Atalhos: <code>P</code> pausa · <code>Espaço</code> iniciar/pausar o tempo (ou calar a campainha) · <code>← →</code> cena anterior/seguinte · <code>F</code>ecrã inteiro (na janela da TV)</div>
         </section>
 
     </main>
 </div>
 
 <footer class="control-footer">
-    <span class="app-credits"></span>
-    <a class="repo-link" id="repoLink" target="_blank" rel="noopener noreferrer"
-       title="Palco no GitHub" aria-label="Palco no GitHub">
-        <i class="fab fa-github"></i>
-    </a>
+    <span class="foot-id"><strong id="footName"></strong> <span id="footVersion"></span> <em id="footCodename"></em></span>
+    <span class="sep">·</span>
+    <span id="footAuthor"></span>
+    <span class="sep">·</span>
+    <a id="footRepo" target="_blank" rel="noopener noreferrer" title="Código no GitHub"><i class="fab fa-github"></i> GitHub</a>
+    <a id="footIssues" target="_blank" rel="noopener noreferrer" title="Reportar um problema ou sugerir melhorias">Reportar um problema</a>
+    <a id="footLicense" target="_blank" rel="noopener noreferrer"></a>
 </footer>
 
 <input type="file" id="importFile" accept="application/json" style="display:none;">
@@ -372,6 +438,9 @@
 <script src="js/sync.js"></script>
 <script src="js/notify.js"></script>
 <script src="js/actions.js"></script>
+<script src="js/images.js"></script>
+<script src="js/control-preview.js"></script>
+<script src="js/control-gallery.js"></script>
 <script src="js/app-control.js"></script>
 </body>
 </html>

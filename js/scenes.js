@@ -81,7 +81,7 @@ const Scenes = {
         return {
             id: Utils.uid(), name: 'Nova cena', emoji: '📌',
             text: '', subtext: '', theme: null, bg: null,
-            isBreak: false, duration: null, compactY: null, preset: null
+            isBreak: false, duration: null, timerMode: null, compactY: null, preset: null
         };
     },
 
@@ -90,7 +90,7 @@ const Scenes = {
         return {
             id: Utils.uid(), name: p.name, emoji: p.emoji,
             text: p.text, subtext: p.subtext, theme: null, bg: null,
-            isBreak: p.isBreak, duration: p.duration, compactY: null, preset: key
+            isBreak: p.isBreak, duration: p.duration, timerMode: null, compactY: null, preset: key
         };
     },
 
@@ -114,6 +114,21 @@ const Scenes = {
             if (scene) return { group, scene };
         }
         return null;
+    },
+
+    /**
+     * Qual temporizador a TV mostra de facto. Em pausa e no modo "só tempo" é
+     * sempre o grande, independentemente da preferência (que fica intacta).
+     */
+    effectiveTimerMode(state) {
+        const scene = this.live(state);
+        if (scene.isBreak || state.layout === 'timer') return 'big';
+        return scene.timerMode || state.timerMode;      // a da cena, ou a predefinida
+    },
+
+    /** A área de vídeos/site/imagens está visível? (escondida em pausa e em "só tempo") */
+    mediaShown(state) {
+        return !this.live(state).isBreak && state.layout !== 'timer';
     },
 
     /** Cor de fundo efetiva. */
@@ -325,6 +340,9 @@ const Scenes = {
         if ('duration' in patch) {
             const secs = Math.round(Number(patch.duration));
             s.duration = secs > 0 ? secs : null;
+        }
+        if ('timerMode' in patch) {
+            s.timerMode = ['big', 'compact', 'hidden'].includes(patch.timerMode) ? patch.timerMode : null;
         }
         if ('compactY' in patch) {
             s.compactY = Number.isFinite(patch.compactY) ? Math.round(patch.compactY) : null;

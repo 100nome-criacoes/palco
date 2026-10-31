@@ -2,7 +2,7 @@
  * Timer — motor do temporizador (sem DOM)
  *
  * Conta pelo RELÓGIO (endsAt), não por "-1 por tick". Assim o tempo
- * continua certo mesmo que o browser atrase os timers de uma janela
+ * continua certo mesmo que o navegador atrase os timers de uma janela
  * em segundo plano.
  *
  * Callbacks (passados em init):

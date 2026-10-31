@@ -1,5 +1,5 @@
 /* =====================================================================
- * Sync — comunicação entre a TV e o controlo (mesma origem, mesmo browser)
+ * Sync — comunicação entre a TV e o controlo (mesma origem, mesmo navegador)
  *
  * O ESTADO (cenas, cores, vídeos...) NÃO passa por aqui: vive no Store.
  * O Sync só transporta o que é momentâneo:
@@ -12,6 +12,8 @@ const Sync = {
     KEY_HEARTBEAT: APP_INFO.key('heartbeat'),
     KEY_COMMAND:   APP_INFO.key('cmd'),
     KEY_TIMER:     APP_INFO.key('timer_state'),
+    KEY_GALLERY:   APP_INFO.key('gallery_state'),
+    KEY_VIDEOS:    APP_INFO.key('videos_state'),
     CHANNEL_NAME:  APP_INFO.slug,
     BOARD_WINDOW:  APP_INFO.slug + '-tv',
     CONTROL_WINDOW: APP_INFO.slug + '-control',
@@ -99,6 +101,18 @@ const Sync = {
         } catch (e) {}
     },
 
+    /** A TV publica a posição da galeria (para o controlo mostrar "3 / 12"). */
+    publishGalleryState({ index, total, playing }) {
+        try {
+            localStorage.setItem(this.KEY_GALLERY, JSON.stringify({ index, total, playing, ts: Date.now() }));
+        } catch (e) {}
+    },
+
+    /** A TV publica que vídeos estão em pausa (para o botão do controlo mostrar play/pausa). */
+    publishVideoState({ paused }) {
+        try { localStorage.setItem(this.KEY_VIDEOS, JSON.stringify({ paused, ts: Date.now() })); } catch (e) {}
+    },
+
     /* ============================ Controlo ============================ */
 
     isBoardConnected() {
@@ -124,6 +138,22 @@ const Sync = {
             ? Math.max(0, Math.ceil((t.endsAt - Date.now()) / 1000))
             : t.remaining;
         return { remaining, running: !!t.running, alarm: !!t.alarm };
+    },
+
+    /** { index, total, playing } da galeria na TV, ou null se a TV não está ligada. */
+    getGalleryState() {
+        if (!this.isBoardConnected()) return null;
+        let raw = null;
+        try { raw = localStorage.getItem(this.KEY_GALLERY); } catch (e) {}
+        return (raw && this._safeParse(raw)) || null;
+    },
+
+    /** { paused: { 1, 2 } } ou null se a TV não está ligada. */
+    getVideoState() {
+        if (!this.isBoardConnected()) return null;
+        let raw = null;
+        try { raw = localStorage.getItem(this.KEY_VIDEOS); } catch (e) {}
+        return (raw && this._safeParse(raw)) || null;
     },
 
     send(type, payload = {}) {

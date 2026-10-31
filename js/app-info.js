@@ -12,11 +12,15 @@ const APP_INFO = {
     tagline: 'Auxiliar de sessão para formadores',
     slug: 'palco',
     author: 'João Frade',
-    version: 'v2.0-f1',
+    version: 'v2.1-f1',
     codename: 'Quadro',
+    license: 'MIT',
     repo: 'https://github.com/100nome-criacoes/palco',
 
-    get credits() { return `${this.author} | ${this.name} ${this.version} "${this.codename}"`; },
+    /** "Palco v2.0-f1" (rodapé da TV) */
+    get short() { return `${this.name} ${this.version}`; },
+    get issuesUrl() { return `${this.repo}/issues`; },
+    get licenseUrl() { return `${this.repo}/blob/HEAD/LICENSE`; },
 
     /** Chave interna com o prefixo da app: key('cmd') → "palco_cmd" */
     key(name) { return `${this.slug}_${name}`; }

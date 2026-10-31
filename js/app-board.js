@@ -18,13 +18,16 @@ const AppBoard = {
     _alarm: false,
 
     init() {
-        document.title = `${APP_INFO.name} — TV`;
-        $('.app-credits').text(APP_INFO.credits);
+        document.title = `${APP_INFO.name} · TV`;
+        $('.app-credits').text(APP_INFO.short);
         const state = Store.init();
         const scene = Scenes.live(state);
         this._sceneId = scene.id;
         this._wasBreak = scene.isBreak;
         this._timerDuration = state.timerDuration;
+
+        Slideshow.init();
+        Media.init();
 
         Timer.init({
             seconds: Scenes.timerSeconds(state, scene),
@@ -104,7 +107,9 @@ const AppBoard = {
         Timer.set(Scenes.timerSeconds(Store.get()));
     },
 
+    /** Espaço: com a campainha a tocar só a cala (não reinicia o tempo); senão inicia/pausa. */
     toggleTimer() {
+        if (this._alarm) return this.setAlarm(false);
         if (Timer.isRunning()) Timer.pause(); else this.startTimer();
     },
 
@@ -121,6 +126,10 @@ const AppBoard = {
             case 'timer:toggle': this.toggleTimer(); break;
             case 'timer:reset':  this.resetTimer(); break;
             case 'alarm:stop':   this.setAlarm(false); break;
+            case 'video:toggle':   Media.toggleVideo(p.slot); break;
+            case 'gallery:next':   Slideshow.next(); break;
+            case 'gallery:prev':   Slideshow.prev(); break;
+            case 'gallery:toggle': Slideshow.toggle(); break;
             default: console.warn('Comando desconhecido:', cmd.type);
         }
     },
@@ -192,7 +201,7 @@ const AppBoard = {
     openControl() {
         const w = window.open('control.html', Sync.CONTROL_WINDOW);
         if (w) { try { w.focus(); } catch (e) {} }
-        else Notify.show('Popup bloqueado — abre control.html manualmente', 'WARNING');
+        else Notify.show('Popup bloqueado. Abre control.html manualmente', 'WARNING');
     },
 
     toggleFullscreen() {

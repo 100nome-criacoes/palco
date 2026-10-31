@@ -2,6 +2,7 @@
  * Control — estilos do control.html (portátil)
  * ===================================================================== */
 .control-body {
+    padding-bottom: 28px;                 /* espaço do rodapé fixo */
     background: #f4f5f7;
     overflow-y: auto;
     min-height: 100vh;
@@ -130,7 +131,7 @@
     gap: 16px;
     position: sticky;
     top: 80px;
-    max-height: calc(100vh - 100px);
+    max-height: calc(100vh - 120px);      /* cabeçalho + rodapé fixo + folga */
     overflow-y: auto;
     padding-right: 4px;
 }
@@ -166,74 +167,13 @@
 .ctrl-card h2 i { color: var(--orange); }
 
 /* Estado atual */
-.current-state {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-.state-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: .88rem;
-}
-.state-row label {
-    color: #888;
-    font-weight: 500;
-}
-.state-row strong {
-    color: var(--text-dark);
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-}
 
-.state-preview {
-    background: #fafbfc;
-    border-radius: 8px;
-    padding: 12px;
-    border-left: 3px solid var(--orange);
-    min-height: 60px;
-}
-.preview-title {
-    font-size: .95rem;
-    font-weight: 700;
-    color: var(--orange);
-    line-height: 1.3;
-    margin-bottom: 6px;
-    white-space: pre-wrap;
-    word-break: break-word;
-}
-.preview-subtext {
-    font-size: .78rem;
-    font-weight: 500;
-    color: var(--green-dark);
-    line-height: 1.4;
-    white-space: pre-wrap;
-    word-break: break-word;
-}
 
 /* Timer remoto */
 .remote-timer {
     display: flex;
     flex-direction: column;
     gap: 12px;
-}
-.remote-controls {
-    display: flex;
-    gap: 8px;
-}
-.remote-presets {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    flex-wrap: wrap;
-}
-.remote-presets span {
-    font-size: .75rem;
-    color: #888;
-    font-weight: 600;
-    margin-right: 4px;
 }
 .preset-btn {
     padding: 6px 10px;
@@ -543,23 +483,6 @@
 }
 
 /* Input de minutos personalizado */
-.remote-custom {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-    padding-top: 8px;
-    border-top: 1px solid #f0f0f0;
-}
-.remote-custom span {
-    font-size: .75rem;
-    color: #888;
-    font-weight: 600;
-}
-.remote-custom .ctrl-input.small {
-    width: 104px;
-    max-width: none;
-}
 
 
 /* =====================================================================
@@ -706,23 +629,7 @@
     75% { transform: rotate(0); }
 }
 
-.remote-config {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding-top: 12px;
-    border-top: 1px solid #f0f0f0;
-}
-.remote-config .form-row { margin-bottom: 0; }
 
-.parse-hint {
-    font-size: .75rem;
-    font-weight: 700;
-    color: var(--green-dark);
-}
-.parse-hint.bad { color: var(--danger); }
-.preset-btn:disabled { opacity: .45; cursor: not-allowed; }
-.preset-btn:disabled:hover { border-color: #e0e0e0; color: #555; }
 
 /* =====================================================================
  * Vídeos: mute e troca
@@ -736,25 +643,6 @@
 /* =====================================================================
  * Rodapé
  * ===================================================================== */
-.control-footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 4px 24px 24px;
-    font-size: .72rem;
-    color: #aaa;
-}
-.repo-link {
-    color: inherit;
-    font-size: 1rem;
-    opacity: .8;
-    transition: opacity .2s, color .2s;
-}
-.repo-link:hover {
-    opacity: 1;
-    color: var(--text-dark);
-}
 
 /* Marca o valor padrão numa lista de opções (ex.: escala de cada modo) */
 .segmented button.is-default::after {
@@ -763,4 +651,491 @@
     font-size: .64rem;
     font-weight: 700;
     opacity: .55;
+}
+
+/* =====================================================================
+ * Pré-visualização da TV: réplica a 1920x1080 (as medidas e posições reais),
+ * reduzida à largura do cartão. --u = 1 px "virtual" da TV.
+ * ===================================================================== */
+.mini-tv {
+    --u: calc(100cqw / 1920);
+    container-type: inline-size;
+    position: relative;
+    aspect-ratio: 16 / 9;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.1);
+    transition: background .35s ease;
+}
+.mini-stage { position: absolute; inset: 0; }
+
+/* Quadro (igual a .board) */
+.mini-board {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: calc(22 * var(--u));
+    padding: calc(32 * var(--u)) calc(40 * var(--u)) calc(28 * var(--u));
+}
+.mini-header { width: 100%; max-width: calc(1200 * var(--u)); margin: 0 auto; text-align: center; }
+.mini-title {
+    font-size: calc(57.6 * var(--u));
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: calc(-.5 * var(--u));
+    color: var(--scene-title);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.mini-sub {
+    max-width: calc(900 * var(--u));
+    margin: calc(12 * var(--u)) auto 0;
+    font-size: calc(24 * var(--u));
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--scene-sub);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.mini-sub:empty { display: none; }
+
+/* Pausa e "só tempo": coluna centrada, como na TV */
+.mini-tv.is-break .mini-board,
+.mini-tv.is-timer .mini-board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: calc(48 * var(--u)) calc(40 * var(--u)) calc(40 * var(--u));
+}
+.mini-tv.is-break .mini-header,
+.mini-tv.is-timer .mini-header { max-width: calc(900 * var(--u)); }
+.mini-tv.is-break .mini-title { font-size: calc(41.6 * var(--u)); }
+.mini-tv.is-break .mini-sub { max-width: calc(700 * var(--u)); margin-top: calc(14 * var(--u)); }
+
+/* Área de media */
+.mini-media {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: calc(18 * var(--u));
+    width: 100%;
+    max-width: calc(1600 * var(--u));
+    min-height: 0;
+    margin: 0 auto;
+}
+.mini-media.hidden { display: none; }
+/* Barra compacta automática: a TV reserva o espaço dela por cima dos vídeos */
+.mini-tv.compact-auto .mini-media { margin-top: calc((var(--cgap, 22) + 36) * var(--u)); }
+
+.mini-slot {
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: calc(14 * var(--u));
+    background: rgba(0,0,0,.12) center / cover no-repeat;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: calc(10 * var(--u));
+    color: rgba(0,0,0,.3);
+    font-size: calc(96 * var(--u));
+}
+.mini-slot.empty { background: rgba(255,255,255,.4); border: 1px dashed rgba(0,0,0,.2); }
+.mini-slot.site { background: rgba(255,255,255,.55); color: var(--scene-sub); }
+.mini-slot.site span { font-size: calc(40 * var(--u)); font-weight: 700; }
+.mini-vol {
+    position: absolute;
+    left: calc(20 * var(--u));
+    bottom: calc(16 * var(--u));
+    font-size: calc(48 * var(--u));
+    color: #fff;
+    text-shadow: 0 0 3px rgba(0,0,0,.7);
+}
+
+/* Temporizadores */
+.mini-time { font-weight: 800; font-variant-numeric: tabular-nums; color: var(--scene-timer); }
+.mini-ctrls { display: flex; }
+.mini-ctrls i { display: block; border-radius: 50%; background: currentColor; }
+.mini-ctrls .go   { color: var(--green); }
+.mini-ctrls .warn { color: var(--orange); }
+.mini-ctrls .idle { color: var(--gray); }
+
+.mini-big,
+.mini-compact { position: absolute; display: none; }
+.mini-tv[data-timer="big"] .mini-big { display: flex; }
+.mini-tv[data-timer="compact"] .mini-compact { display: flex; }
+
+.mini-big {
+    left: calc(22 * var(--u));
+    top: 50%;
+    transform: translateY(-50%);
+    flex-direction: column;
+    align-items: center;
+    gap: calc(4 * var(--u));
+    padding: calc(14 * var(--u)) calc(18 * var(--u)) calc(12 * var(--u));
+    border-radius: calc(20 * var(--u));
+    background: var(--scene-card);
+    box-shadow: 0 calc(8 * var(--u)) calc(32 * var(--u)) rgba(0,0,0,.08);
+}
+.mini-big .mini-time { font-size: calc(80 * var(--u)); letter-spacing: calc(2 * var(--u)); line-height: 1; }
+.mini-label {
+    margin-bottom: calc(6 * var(--u));
+    font-size: calc(12 * var(--u));
+    font-weight: 600;
+    letter-spacing: calc(1.8 * var(--u));
+    text-transform: uppercase;
+    color: var(--scene-muted);
+}
+.mini-big .mini-ctrls { gap: calc(10 * var(--u)); margin-top: calc(4 * var(--u)); }
+.mini-big .mini-ctrls i { width: calc(16 * var(--u)); height: calc(16 * var(--u)); }
+
+/* Pausa e "só tempo": tempo enorme, centrado no ecrã todo */
+.mini-tv.is-break .mini-big,
+.mini-tv.is-timer .mini-big {
+    inset: 0;
+    left: 0 !important;
+    top: 0 !important;
+    transform: none !important;
+    justify-content: center;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+.mini-tv.is-break .mini-big .mini-time,
+.mini-tv.is-timer .mini-big .mini-time { font-size: calc(224 * var(--u)); letter-spacing: calc(4 * var(--u)); }
+.mini-tv.is-break .mini-label,
+.mini-tv.is-timer .mini-label { font-size: calc(17.6 * var(--u)); letter-spacing: calc(2 * var(--u)); margin-bottom: calc(14 * var(--u)); }
+.mini-tv.is-break .mini-big .mini-ctrls,
+.mini-tv.is-timer .mini-big .mini-ctrls { gap: calc(14 * var(--u)); }
+.mini-tv.is-break .mini-big .mini-ctrls i,
+.mini-tv.is-timer .mini-big .mini-ctrls i {
+    width: calc(56 * var(--u));
+    height: calc(56 * var(--u));
+    background: var(--scene-card);
+    border: calc(6 * var(--u)) solid currentColor;
+}
+
+.mini-compact {
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+    gap: calc(12 * var(--u));
+    padding: calc(8 * var(--u)) calc(16 * var(--u)) calc(8 * var(--u)) calc(30 * var(--u));
+    border-radius: calc(40 * var(--u));
+    background: var(--scene-card-solid);
+    box-shadow: 0 calc(8 * var(--u)) calc(28 * var(--u)) rgba(0,0,0,.12);
+    white-space: nowrap;
+}
+.mini-compact .mini-time {
+    min-width: calc(96 * var(--u));
+    font-size: calc(28.8 * var(--u));
+    letter-spacing: calc(1 * var(--u));
+    text-align: center;
+}
+.mini-compact .mini-ctrls { gap: calc(6 * var(--u)); }
+.mini-compact .mini-ctrls i { width: calc(34 * var(--u)); height: calc(34 * var(--u)); }
+
+/* =====================================================================
+ * Campos de link com feedback (vídeos e site)
+ * ===================================================================== */
+.input-wrap { position: relative; flex: 1; }
+.input-wrap .ctrl-input { padding-right: 34px; }
+
+.ctrl-input.is-saved   { border-color: #b9dc8f; background: #fafdf6; }
+.ctrl-input.is-draft   { border-color: var(--amber); background: #fffbea; }
+.ctrl-input.is-invalid { border-color: var(--danger); background: #fff6f6; }
+
+.link-status {
+    position: absolute;
+    right: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: .95rem;
+    pointer-events: none;
+}
+.link-status.saved   { color: var(--green-dark); }
+.link-status.draft   { color: #d99a00; }
+.link-status.invalid { color: var(--danger); }
+
+.field-msg { font-size: .74rem; font-weight: 600; color: #a87400; }
+.field-msg.bad { color: var(--danger); }
+.field-msg.hidden { display: none; }
+
+/* =====================================================================
+ * Imagens (bloco recolhível e compacto)
+ * ===================================================================== */
+.collapsible {
+    margin-bottom: 14px;
+    border: 1.5px solid #e6e8ec;
+    border-radius: 10px;
+    background: #fafbfc;
+}
+.collapsible > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: .85rem;
+    font-weight: 700;
+    color: #444;
+    list-style: none;
+}
+.collapsible > summary::-webkit-details-marker { display: none; }
+.collapsible > summary::after {
+    content: "\f078";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: .65rem;
+    color: #aaa;
+    transition: transform .2s;
+}
+.collapsible[open] > summary::after { transform: rotate(180deg); }
+.sum-title i { color: var(--orange); margin-right: 6px; }
+.sum-meta { margin-left: auto; font-size: .78rem; font-weight: 600; color: #888; }
+.collapsible-body { padding: 0 14px 12px; display: flex; flex-direction: column; gap: 10px; }
+
+.dropzone {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    border: 2px dashed #d5d8de;
+    border-radius: 10px;
+    background: #fff;
+    color: #777;
+    transition: border-color .15s, background .15s;
+}
+.dropzone.over { border-color: var(--green); background: #f3faea; }
+.dropzone.busy { opacity: .6; pointer-events: none; }
+.dz-icon { color: var(--orange); }
+.dz-text { flex: 1; min-width: 140px; font-size: .8rem; font-weight: 600; }
+.dz-actions { display: flex; gap: 6px; }
+
+.thumb-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+    gap: 6px;
+    max-height: 124px;          /* ~2 filas; o resto rola */
+    overflow-y: auto;
+}
+.thumb-grid:empty { display: none; }
+.thumb {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #eceff1;
+}
+.thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.thumb-n {
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    padding: 0 4px;
+    border-radius: 5px;
+    background: rgba(0,0,0,.55);
+    color: #fff;
+    font-size: .58rem;
+    font-weight: 700;
+}
+.thumb-x {
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0,0,0,.6);
+    color: #fff;
+    font-size: .62rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s;
+}
+.thumb:hover .thumb-x,
+.thumb-x:focus-visible { opacity: 1; }
+
+.gallery-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.gallery-row label { font-size: .78rem; font-weight: 600; color: #555; }
+.gallery-row .unit { font-size: .78rem; color: #888; margin-left: -2px; }
+.gallery-row .ctrl-input.small { width: 64px; padding: 7px 8px; }
+.gallery-transport { display: flex; align-items: center; gap: 4px; margin-left: 6px; }
+.gallery-counter {
+    min-width: 48px;
+    text-align: center;
+    font-size: .78rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: #666;
+}
+.push-right { margin-left: auto; }
+
+/* Nas imagens, "Preencher" e "Cobrir" dão o mesmo: esconde-se um */
+.segmented.no-fill button[data-scale="fill"] { display: none; }
+
+@media (max-width: 760px) {
+    #layoutSegmented { flex-wrap: wrap; }
+}
+
+/* Botão de pausa/play do vídeo (ao lado do mute) */
+.ctrl-btn[data-toggle-play] i { width: 1em; text-align: center; }
+
+/* =====================================================================
+ * Temporizador: toggle único, atalhos + personalizado numa linha, configuração recolhida
+ * ===================================================================== */
+.remote-controls { display: flex; flex-wrap: nowrap; gap: 8px; }
+
+.preset-btn:disabled { opacity: .45; cursor: not-allowed; }
+.preset-btn:disabled:hover { border-color: #e0e0e0; color: #555; }
+
+/* Campo + botão colados: o botão mostra o tempo lido (▶ 05:30) */
+.custom-start { display: flex; }
+.custom-start .ctrl-input {
+    width: 62px;
+    padding: 6px 8px;
+    font-size: .75rem;
+    text-align: center;
+    border-radius: 6px 0 0 6px;
+}
+.custom-start .ctrl-input.is-invalid { border-color: var(--danger); background: #fff6f6; }
+.custom-start button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0 9px;
+    border: 1.5px solid #e0e0e0;
+    border-left: 0;
+    border-radius: 0 6px 6px 0;
+    background: #fff;
+    color: var(--green-dark);
+    font-family: 'Montserrat', sans-serif;
+    font-size: .75rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-variant-numeric: tabular-nums;
+}
+.custom-start button:not(:disabled):hover { background: #eaf5e0; }
+.custom-start button:disabled { color: #bbb; cursor: not-allowed; }
+
+/* Configuração (rara de mudar) dentro do cartão */
+.ctrl-card .collapsible { margin: 0; }
+.cfg-row { display: flex; align-items: center; gap: 8px; }
+.cfg-row label { font-size: .78rem; font-weight: 600; color: #555; }
+.cfg-row .ctrl-input.small { width: 74px; padding: 7px 8px; }
+.cfg-row .ctrl-input.is-invalid { border-color: var(--danger); background: #fff6f6; }
+.cfg-row .unit { font-size: .78rem; color: #888; margin-left: -2px; }
+
+/* Pré-visualização presa ao topo da coluna: o resto desliza por baixo */
+.preview-caption {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: .8rem;
+    color: #666;
+}
+.preview-caption strong { color: var(--text-dark); font-weight: 700; }
+.preview-caption span { font-variant-numeric: tabular-nums; }
+.control-left > .preview-card {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    /* a segunda sombra tapa o intervalo entre cartões, para o que desliza não se ver por cima */
+    box-shadow: 0 2px 8px rgba(0,0,0,.05), 0 14px 0 0 #f4f5f7;
+}
+@media (max-width: 1100px) {
+    .control-left > .preview-card { position: static; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+}
+
+/* Atalhos + personalizado: grelha. Os 5 atalhos repartem o espaço; o campo ocupa o que precisa. */
+.quick-start {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) auto;
+    gap: 6px;
+    align-items: stretch;
+}
+.preset-btn { padding: 6px 0; text-align: center; }
+
+.segmented.small { padding: 3px; }
+.segmented.small button { padding: 6px 6px; font-size: .74rem; gap: 4px; }
+
+/* Pré-visualização: vídeo em pausa */
+.mini-slot.paused::after {
+    content: "\f04c";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    top: calc(14 * var(--u));
+    right: calc(14 * var(--u));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(64 * var(--u));
+    height: calc(64 * var(--u));
+    border-radius: 50%;
+    background: rgba(0,0,0,.6);
+    color: #fff;
+    font-size: calc(28 * var(--u));
+}
+
+/* =====================================================================
+ * Rodapé
+ * ===================================================================== */
+.control-footer strong { color: #666; font-weight: 700; }
+.control-footer em { font-style: italic; }
+.control-footer .sep { opacity: .5; }
+.control-footer a {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: inherit;
+    text-decoration: none;
+    transition: color .15s;
+}
+.control-footer a:hover { color: var(--text-dark); text-decoration: underline; }
+
+/* Rodapé: barra fina sempre visível (sem obrigar a página a subir para o ver) */
+.control-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    height: 28px;
+    padding: 0 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: .7rem;
+    color: #8a8f98;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(6px);
+    border-top: 1px solid #e6e8ec;
+}
+.control-body .notification { bottom: 44px; }      /* o aviso fica acima da barra */
+
+/* Em ecrãs estreitos uma barra fixa ocuparia demasiado: volta a ser rodapé normal */
+@media (max-width: 760px) {
+    .control-body { padding-bottom: 0; }
+    .control-footer {
+        position: static;
+        flex-wrap: wrap;
+        height: auto;
+        padding: 10px 16px 18px;
+        white-space: normal;
+        background: transparent;
+        border-top: 0;
+        backdrop-filter: none;
+    }
 }

@@ -21,9 +21,10 @@ const Store = {
      */
     VERSION: 6,
 
-    LAYOUTS:     ['double', 'single', 'site', 'timer'],
+    LAYOUTS:     ['double', 'single', 'site', 'images', 'timer'],
     SCALES:      ['fit', 'fill', 'cover'],
-    DEFAULT_SCALES: { double: 'cover', single: 'fill', site: 'fit' },
+    DEFAULT_SCALES: { double: 'cover', single: 'fill', site: 'fit', images: 'fit' },
+    GALLERY_INTERVAL: { min: 2, max: 300, fallback: 6 },   // segundos entre imagens
     TIMER_MODES: ['big', 'compact', 'hidden'],
 
     state: null,
@@ -48,7 +49,9 @@ const Store = {
                 2: { url: '', muted: true }
             },
             siteUrl: '',
-            layout: 'double',            // 'double' | 'single' | 'site' | 'timer'
+            // As imagens em si ficam no IndexedDB (ver images.js). Aqui só a lista, por ordem.
+            gallery: { items: [], interval: this.GALLERY_INTERVAL.fallback },
+            layout: 'double',            // 'double' | 'single' | 'site' | 'images' | 'timer'
             scales: Object.assign({}, this.DEFAULT_SCALES),   // escala guardada POR modo
             timerDuration: 900,          // segundos (duração global)
             timerMode: 'big',            // 'big' | 'compact' | 'hidden'
@@ -79,11 +82,13 @@ const Store = {
                 2: this._normalizeVideo(src.videos && src.videos[2])
             },
             siteUrl: str(src.siteUrl),
+            gallery: this._normalizeGallery(src.gallery),
             layout: pick(src.layout, this.LAYOUTS, base.layout),
             scales: {
                 double: pick(src.scales && src.scales.double, this.SCALES, this.DEFAULT_SCALES.double),
                 single: pick(src.scales && src.scales.single, this.SCALES, this.DEFAULT_SCALES.single),
-                site:   pick(src.scales && src.scales.site,   this.SCALES, this.DEFAULT_SCALES.site)
+                site:   pick(src.scales && src.scales.site,   this.SCALES, this.DEFAULT_SCALES.site),
+                images: pick(src.scales && src.scales.images, this.SCALES, this.DEFAULT_SCALES.images)
             },
             timerMode:     pick(src.timerMode, this.TIMER_MODES, base.timerMode),
             timerDuration: (src.timerDuration > 0) ? Math.round(src.timerDuration) : base.timerDuration,
@@ -100,6 +105,19 @@ const Store = {
         d.previousSceneId = group.scenes.some(s => s.id === src.previousSceneId)
             ? src.previousSceneId : null;
         return d;
+    },
+
+    _normalizeGallery(g) {
+        const { min, max, fallback } = this.GALLERY_INTERVAL;
+        const items = (g && Array.isArray(g.items) ? g.items : [])
+            .filter(i => i && typeof i.id === 'string' && i.id)
+            .map(i => ({
+                id: i.id,
+                name: typeof i.name === 'string' ? i.name : '',
+                bytes: Number.isFinite(i.bytes) && i.bytes > 0 ? Math.round(i.bytes) : 0
+            }));
+        const interval = Number.isFinite(g && g.interval) ? Math.round(g.interval) : fallback;
+        return { items, interval: Utils.clamp(interval, min, max) };
     },
 
     _normalizeVideo(v) {
@@ -138,6 +156,7 @@ const Store = {
             bg: /^#[0-9a-f]{6}$/i.test(s.bg) ? s.bg.toLowerCase() : null,
             isBreak: s.isBreak === true,
             duration: s.duration > 0 ? Math.round(s.duration) : null,
+            timerMode: this.TIMER_MODES.includes(s.timerMode) ? s.timerMode : null,
             compactY: Number.isFinite(s.compactY) ? Math.round(s.compactY) : null,
             preset
         };
@@ -232,8 +251,12 @@ const Store = {
         this.replace(this.defaults());
     },
 
+    /** As imagens ficam no navegador (IndexedDB) e não vão no ficheiro; só as definições da galeria. */
     exportJson() {
-        return JSON.stringify(this.state, null, 2);
+        const copy = Object.assign({}, this.state, {
+            gallery: Object.assign({}, this.state.gallery, { items: [] })
+        });
+        return JSON.stringify(copy, null, 2);
     },
 
     /** Valida um JSON importado. Devolve o estado normalizado ou null. */

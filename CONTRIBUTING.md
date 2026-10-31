@@ -9,7 +9,7 @@ Abre uma issue com:
 - **O que aconteceu** — descrição do comportamento observado
 - **O que esperavas** — descrição do comportamento esperado
 - **Como reproduzir** — passos concretos
-- **Contexto** — browser, sistema, e se é a versão pública ou local
+- **Contexto** — navegador, sistema, e se é a versão pública ou local
 - **Consola** — erros relevantes do DevTools (F12 → Console)
 
 Se possível, inclui uma captura de ecrã ou um GIF curto.

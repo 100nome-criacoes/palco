@@ -1,6 +1,6 @@
 # Palco
 
-Quadro digital para formadores. Duas janelas no mesmo browser: a **TV** mostra cena, temporizador e vídeos/site; o **Controlo** edita tudo e comanda a TV em tempo real.
+Quadro digital para formadores. Duas janelas no mesmo navegador: a **TV** mostra cena, temporizador e vídeos/site; o **Controlo** edita tudo e comanda a TV em tempo real.
 
 [![licença: MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)](LICENSE)
 [![versão: 2.0](https://img.shields.io/badge/vers%C3%A3o-2.0--f1-yellow)](#funcionalidades)
@@ -27,8 +27,10 @@ Formadores em sessões práticas precisam de mostrar instruções, vídeos e um 
 
 - **Grupos e cenas configuráveis** — cada cena tem o seu texto, cor, duração e modo de apresentação
 - **Temas de cor** com contraste automático, para nunca haver combinações ilegíveis
-- **Vídeos do YouTube e sites incorporados** (Google Slides, apresentações)
-- **Temporizador** que conta pelo relógio (não perde tempo em segundo plano) e publica o estado para o controlo
+- **Vídeos do YouTube e sites incorporados** (Google Slides, apresentações), com som por vídeo, troca 1 ↔ 2 e campos que mostram claramente o que está guardado
+- **Galeria de imagens** — arrasta imagens ou uma pasta; passam na TV com transição suave e controlo remoto (anterior, pausa, seguinte). Ficam só no navegador, numa cópia reduzida
+- **Pré-visualização da TV no controlo**, uma réplica a 1080p com as cores, as posições do temporizador e as miniaturas dos vídeos
+- **Temporizador** que conta pelo relógio (não perde tempo em segundo plano) e publica o estado para o controlo. Cada cena pode mostrá-lo em coluna, em barra ou escondê-lo
 - **Modo pausa** com o tempo em grande, legível à distância
 - **Modo "só tempo"** — esconde vídeos e destaca o temporizador
 - **Persistência local** com exportação e importação em JSON
@@ -50,9 +52,10 @@ Formadores em sessões práticas precisam de mostrar instruções, vídeos e um 
 
 ## Notas de utilização
 
-- Só funciona com as duas janelas no **mesmo browser, perfil e origem**. Para controlar a TV a partir de *outro dispositivo* seria preciso um servidor (WebSocket).
-- **Som (alarme e vídeos com som):** o browser só o permite depois de um clique ou tecla na janela da TV. Faz um clique nela antes de começar.
-- **Ecrã inteiro:** `F` na janela da TV (o browser não permite ativá-lo à distância).
+- Só funciona com as duas janelas no **mesmo navegador, perfil e origem**. Para controlar a TV a partir de *outro dispositivo* seria preciso um servidor (WebSocket).
+- **Imagens:** ficam no IndexedDB deste navegador (cópia reduzida a 1920 px; os originais não são tocados) e **não vão no ficheiro exportado**. Remover uma imagem apaga-a do navegador, e "Repor valores de origem" apaga todas.
+- **Som (alarme e vídeos com som):** o navegador só o permite depois de um clique ou tecla na janela da TV. Faz um clique nela antes de começar.
+- **Ecrã inteiro:** `F` na janela da TV (o navegador não permite ativá-lo à distância).
 - Os dados ficam em `localStorage` (`palco_session`). O formato tem um número de versão (`Store.VERSION`), guardado também no ficheiro exportado, para permitir converter dados antigos se o formato mudar.
 
 ## Personalizar e renomear
@@ -70,7 +73,8 @@ Ver [ARCHITECTURE.md](ARCHITECTURE.md) para a descrição de cada módulo e das 
     css/    base.css · board.css · control.css
     js/     app-info.js · utils.js · scenes.js · store.js · sync.js
             notify.js · actions.js · timer.js · draggable.js
-            media.js · board-view.js · app-board.js · app-control.js
+            images.js · slideshow.js · media.js · board-view.js · app-board.js
+            control-preview.js · control-gallery.js · app-control.js
     tests/  logic.test.js
 
 ## Contribuir

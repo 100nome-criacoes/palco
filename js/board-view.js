@@ -26,19 +26,10 @@ const BoardView = {
             .toggleClass('layout-timer', state.layout === 'timer');
     },
 
-    /**
-     * Em pausa e no layout "Só tempo" o temporizador é sempre o grande,
-     * independentemente da preferência (que fica intacta no estado).
-     */
-    effectiveTimerMode(state) {
-        const scene = Scenes.live(state);
-        return (scene.isBreak || state.layout === 'timer') ? 'big' : state.timerMode;
-    },
-
     /** Qual temporizador está visível e onde. */
     renderTimerLayout(state) {
         const scene = Scenes.live(state);
-        const mode = this.effectiveTimerMode(state);
+        const mode = Scenes.effectiveTimerMode(state);
         $('#bigTimer').toggleClass('hidden', mode !== 'big');
         $('#compactTimer').toggleClass('hidden', mode !== 'compact');
 

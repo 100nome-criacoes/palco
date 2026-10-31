@@ -4,7 +4,7 @@
 
 /**
  * Sinal sonoro. Usa um único AudioContext (criar um por beep esgota o limite
- * do browser). Os browsers só permitem som depois de uma interação do
+ * do navegador). Os navegadores só permitem som depois de uma interação do
  * utilizador com a página, por isso o contexto é "desbloqueado" no 1.º clique/tecla.
  */
 const Alarm = {

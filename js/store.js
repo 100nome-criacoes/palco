@@ -55,7 +55,8 @@ const Store = {
             scales: Object.assign({}, this.DEFAULT_SCALES),   // escala guardada POR modo
             timerDuration: 900,          // segundos (duração global)
             timerMode: 'big',            // 'big' | 'compact' | 'hidden'
-            bigTimerPos: { x: 22, y: null }   // (a posição do temporizador compacto é por cena)
+            bigTimerPos: { x: 22, y: null },  // (a posição do temporizador compacto é por cena)
+            textSize: 'large'                 // 'normal' | 'medium' | 'large' | 'xlarge' (ver Scenes.TEXT_SIZES)
         };
     },
 
@@ -91,6 +92,7 @@ const Store = {
                 images: pick(src.scales && src.scales.images, this.SCALES, this.DEFAULT_SCALES.images)
             },
             timerMode:     pick(src.timerMode, this.TIMER_MODES, base.timerMode),
+            textSize:      pick(src.textSize, Object.keys(Scenes.TEXT_SIZES), base.textSize),
             timerDuration: (src.timerDuration > 0) ? Math.round(src.timerDuration) : base.timerDuration,
             bigTimerPos: {
                 x: finite(src.bigTimerPos && src.bigTimerPos.x, base.bigTimerPos.x),

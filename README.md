@@ -26,7 +26,8 @@ Formadores em sessões práticas precisam de mostrar instruções, vídeos e um 
 ## Funcionalidades
 
 - **Grupos e cenas configuráveis** — cada cena tem o seu texto, cor, duração e modo de apresentação
-- **Temas de cor** com contraste automático, para nunca haver combinações ilegíveis
+- **Temas de cor** com contraste automático, para nunca haver combinações ilegíveis, e um tema de **alto contraste**
+- **Tamanho do texto** ajustável (4 níveis) para salas compridas, com o subtexto a crescer mais do que o título
 - **Vídeos do YouTube e sites incorporados** (Google Slides, apresentações), com som por vídeo, troca 1 ↔ 2 e campos que mostram claramente o que está guardado
 - **Galeria de imagens** — arrasta imagens ou uma pasta; passam na TV com transição suave e controlo remoto (anterior, pausa, seguinte). Ficam só no navegador, numa cópia reduzida
 - **Pré-visualização da TV no controlo**, uma réplica a 1080p com as cores, as posições do temporizador e as miniaturas dos vídeos

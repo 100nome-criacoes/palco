@@ -24,13 +24,13 @@ body.sound-active .round-btn { display: none; }
 
 .board-header {
     text-align: center;
-    max-width: 1200px;
+    max-width: calc(1200px * var(--ts, 1));
     margin: 0 auto;
     width: 100%;
 }
 
 .scene-title {
-    font-size: clamp(2rem, 4vw, 3.6rem);
+    font-size: calc(clamp(2rem, 4vw, 3.6rem) * var(--ts, 1));
     font-weight: 800;
     line-height: 1.15;
     color: var(--scene-title, var(--orange));
@@ -40,14 +40,14 @@ body.sound-active .round-btn { display: none; }
 }
 
 .scene-subtext {
-    font-size: clamp(1.05rem, 1.5vw, 1.5rem);
+    font-size: calc(clamp(1.05rem, 1.5vw, 1.5rem) * var(--ts-sub, 1));
     font-weight: 600;
     line-height: 1.3;
     color: var(--scene-sub, var(--green-dark));
     margin-top: 12px;
     white-space: pre-wrap;
     word-break: break-word;
-    max-width: 900px;
+    max-width: calc(900px * var(--ts, 1));
     margin-left: auto;
     margin-right: auto;
     text-align: center;
@@ -80,7 +80,7 @@ body.layout-timer .board-media { display: none; }
 
 /* Barra compacta por baixo do texto: reserva o espaço dela (≈ 50 px de altura)
    mais o intervalo, para não tapar os vídeos. --compact-gap vem de BoardView. */
-body.compact-auto .board-media { margin-top: calc(var(--compact-gap, 22px) + 36px); }
+body.compact-auto .board-media { margin-top: calc(var(--compact-gap, 22px) + var(--compact-h, 50px) - 14px); }
 
 .board-media.single { grid-template-columns: 1fr; }
 .board-media.single .media-slot#mediaSlot2 { display: none; }
@@ -190,7 +190,7 @@ body.compact-auto .board-media { margin-top: calc(var(--compact-gap, 22px) + 36p
 .bt-handle:active { cursor: grabbing; }
 
 .bt-time {
-    font-size: 5rem;
+    font-size: calc(5rem * var(--ts, 1));
     font-weight: 800;
     color: var(--scene-timer, var(--orange));
     letter-spacing: 2px;
@@ -272,12 +272,12 @@ body.compact-auto .board-media { margin-top: calc(var(--compact-gap, 22px) + 36p
 .ct-handle:active { cursor: grabbing; }
 
 .ct-time {
-    font-size: 1.8rem;
+    font-size: calc(1.8rem * var(--ts, 1));
     font-weight: 800;
     color: var(--scene-timer, var(--orange));
     font-variant-numeric: tabular-nums;
     letter-spacing: 1px;
-    min-width: 96px;
+    min-width: calc(96px * var(--ts, 1));
     text-align: center;
 }
 .ct-controls { display: flex; gap: 6px; }
@@ -314,14 +314,14 @@ body.break-mode .board {
     grid-template-columns: none;
     grid-template-rows: none;
 }
-body.break-mode .board-header { max-width: 900px; width: 100%; }
+body.break-mode .board-header { max-width: calc(900px * var(--ts, 1)); width: 100%; }
 body.break-mode .scene-title {
-    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-size: calc(clamp(1.8rem, 3vw, 2.6rem) * var(--ts, 1));
     text-align: center;
 }
 body.break-mode .scene-subtext {
-    font-size: clamp(1.1rem, 1.6vw, 1.5rem);
-    max-width: 700px;
+    font-size: calc(clamp(1.1rem, 1.6vw, 1.5rem) * var(--ts-sub, 1));
+    max-width: calc(700px * var(--ts, 1));
     margin: 14px auto 0;
     text-align: center;
 }
@@ -348,7 +348,7 @@ body.layout-timer .board {
     grid-template-columns: none;
     grid-template-rows: none;
 }
-body.layout-timer .board-header { max-width: 900px; width: 100%; }
+body.layout-timer .board-header { max-width: calc(900px * var(--ts, 1)); width: 100%; }
 
 /* O timer grande fica centrado quando em pausa OU em layout 'timer' */
 body.break-mode .big-timer,

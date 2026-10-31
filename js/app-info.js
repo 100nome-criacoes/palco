@@ -12,7 +12,7 @@ const APP_INFO = {
     tagline: 'Auxiliar de sessão para formadores',
     slug: 'palco',
     author: 'João Frade',
-    version: 'v2.1-f1',
+    version: 'v2.1.1',
     codename: 'Quadro',
     license: 'MIT',
     repo: 'https://github.com/100nome-criacoes/palco',

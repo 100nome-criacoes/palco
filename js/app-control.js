@@ -196,10 +196,9 @@ const AppControl = {
             $('<div>')
                 .addClass('scene-list-item')
                 .toggleClass('active', s.id === editing.id)
-                .attr('draggable', 'true')
+                .attr({ draggable: 'true', 'data-id': s.id })
                 .html(`<i class="fas fa-grip-vertical grip"></i><span class="emoji">${Utils.esc(s.emoji || '•')}</span>` +
                       `<span class="grow">${Utils.esc(s.name)}${badge}</span>${dot}`)
-                .on('click', () => this.edit(s.id))
                 .on('dragstart', (e) => {
                     this._dragId = s.id;
                     e.originalEvent.dataTransfer.effectAllowed = 'move';
@@ -356,6 +355,7 @@ const AppControl = {
 
     renderTimerSettings(state) {
         this.markActive('#timerDefaultSegmented', 'timer-mode', state.timerMode);
+        this.markActive('#textSizeSegmented', 'text-size', state.textSize);
         this.setField($('#timerMinutes'), Utils.formatDuration(state.timerDuration));
         $('#timerMinutes').removeClass('is-invalid');
         $('#timerConfigMeta').text(`${Utils.formatDuration(state.timerDuration)} min · ${this.TIMER_MODE_LABELS[state.timerMode]}`);
@@ -492,6 +492,12 @@ const AppControl = {
             else Notify.show('Usa minutos (5) ou min:seg (5:30), até 180 min', 'WARNING');
         });
 
+        // Tamanho do texto na TV (depende da sala, por isso é global)
+        $('#textSizeSegmented').on('click', 'button', (e) => {
+            const size = $(e.currentTarget).data('text-size');
+            Store.update(d => { d.textSize = size; });
+        });
+
         // Aparência padrão do tempo (as cenas podem ter a sua, no editor)
         $('#timerDefaultSegmented').on('click', 'button', (e) => {
             const mode = $(e.currentTarget).data('timer-mode');
@@ -576,6 +582,21 @@ const AppControl = {
     },
 
     bindScenes() {
+        // Clique edita; duplo clique põe a cena na TV. Deteta-se pelo tempo entre cliques (e não por
+        // "dblclick") porque a lista é redesenhada ao primeiro clique.
+        $('#sceneList').on('click', '.scene-list-item', (e) => {
+            const id = $(e.currentTarget).attr('data-id');
+            const now = Date.now();
+            const last = this._lastListClick;
+            this._lastListClick = { id, at: now };
+            if (last && last.id === id && now - last.at < 400) {
+                this._lastListClick = null;
+                this.goLive(id);
+            } else {
+                this.edit(id);
+            }
+        });
+
         $('#newSceneBtn').on('click', () => {
             const hit = Scenes.locate(Store.get(), this.editingId);
             let created;

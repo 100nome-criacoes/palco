@@ -38,6 +38,10 @@ const ControlPreview = {
         tv.style.setProperty('--scene-card', theme.card);
         tv.style.setProperty('--scene-card-solid', theme.cardSolid);
 
+        const size = Scenes.TEXT_SIZES[state.textSize] || Scenes.TEXT_SIZES.normal;
+        tv.style.setProperty('--ts', size.title);
+        tv.style.setProperty('--ts-sub', size.sub);
+
         $('#previewTitle').html(Utils.renderMarkdown(scene.text));
         $('#previewSubtext').html(Utils.renderMarkdown(scene.subtext));
 
@@ -88,6 +92,7 @@ const ControlPreview = {
         if (mode === 'compact') {
             const gap = Math.round(Utils.clamp(this.TV_HEIGHT * 0.022, 16, 28));   // igual à TV
             tv.style.setProperty('--cgap', gap);
+            tv.style.setProperty('--chh', Math.round(compact.offsetHeight / (tv.clientWidth / this.TV_WIDTH || 1)) || 50);
             const top = auto
                 ? this._headerBottom(tv) + gap
                 : Utils.clamp(scene.compactY, 8, this.TV_HEIGHT - 80);

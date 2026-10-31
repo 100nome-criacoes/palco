@@ -20,6 +20,9 @@ const BoardView = {
         body.style.setProperty('--scene-muted', theme.muted);
         body.style.setProperty('--scene-card', theme.card);
         body.style.setProperty('--scene-card-solid', theme.cardSolid);
+        const size = Scenes.TEXT_SIZES[state.textSize] || Scenes.TEXT_SIZES.normal;   // tamanho do texto (sala grande)
+        body.style.setProperty('--ts', size.title);
+        body.style.setProperty('--ts-sub', size.sub);
 
         $('body')
             .toggleClass('break-mode', scene.isBreak)
@@ -43,6 +46,7 @@ const BoardView = {
                 // Espaço entre o texto e a barra: proporcional à altura do ecrã (16–28 px)
                 const gap = Math.round(Utils.clamp(window.innerHeight * 0.022, 16, 28));
                 document.body.style.setProperty('--compact-gap', gap + 'px');
+                document.body.style.setProperty('--compact-h', ($('#compactTimer')[0].offsetHeight || 50) + 'px');
                 top = document.querySelector('.board-header').getBoundingClientRect().bottom + gap;
             } else {
                 top = Utils.clamp(scene.compactY, 8, Math.max(8, window.innerHeight - 80));

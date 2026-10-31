@@ -15,7 +15,7 @@ O estado da sessão vive **num único sítio**: o objeto `Store`, que persiste e
 ### Domínio
 
 - **`utils.js`** — funções puras: `esc`, `uid`, `clamp`, `debounce`, `renderMarkdown`, `parseDuration`, `formatDuration`, `formatTime`, `youtubeId`, `youtubeEmbed`, `safeUrl`.
-- **`scenes.js`** — lógica de grupos, cenas e temas. Não toca em DOM, storage nem notificações. Expõe `Scenes.PRESETS` (modelos de cena), `Scenes.THEMES` (temas de cor com contraste pré-calculado) e funções de leitura (`live`, `locate`, `theme`, `mediaShown`, `effectiveTimerMode`; as duas últimas são as regras de visibilidade que a TV e a pré-visualização partilham). Cada cena pode ter a sua aparência do temporizador (`timerMode`: coluna, barra ou oculto); sem definição própria usa a predefinida (`state.timerMode`), e em pausa e em "só tempo" é sempre grande e escrita sobre um *draft* (`setLive`, `step`, `toggleBreak`, `createGroup`, `update`, ...).
+- **`scenes.js`** — lógica de grupos, cenas e temas. Não toca em DOM, storage nem notificações. Expõe `Scenes.PRESETS` (modelos de cena), `Scenes.TEXT_SIZES` (níveis de tamanho do texto: multiplicadores do título/temporizador e, maiores, do subtexto), `Scenes.THEMES` (temas de cor com contraste pré-calculado) e funções de leitura (`live`, `locate`, `theme`, `mediaShown`, `effectiveTimerMode`; as duas últimas são as regras de visibilidade que a TV e a pré-visualização partilham). Cada cena pode ter a sua aparência do temporizador (`timerMode`: coluna, barra ou oculto); sem definição própria usa a predefinida (`state.timerMode`), e em pausa e em "só tempo" é sempre grande e escrita sobre um *draft* (`setLive`, `step`, `toggleBreak`, `createGroup`, `update`, ...).
 
 ### Estado
 

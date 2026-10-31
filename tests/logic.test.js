@@ -498,6 +498,26 @@ test('pausa e ponto de cada posição seguem o vídeo na troca; vídeos iguais s
     assert.deepStrictEqual(JSON.parse(run(ctx, 'JSON.stringify(Media._paused)')), { 1: true, 2: false });
 });
 
+test('tamanho do texto: padrão "Grande", valores inválidos corrigem-se, e o subtexto cresce mais do que o título', () => {
+    const { ctx } = load(base);
+    run(ctx, 'Store.init()');
+    assert.strictEqual(run(ctx, 'Store.get().textSize'), 'large');
+    run(ctx, `Store.replace({ textSize: 'enorme-demais' })`);
+    assert.strictEqual(run(ctx, 'Store.get().textSize'), 'large');
+    run(ctx, `Store.replace({ textSize: 'huge' })`);                                // o nível antigo já não existe
+    assert.strictEqual(run(ctx, 'Store.get().textSize'), 'large');
+    run(ctx, `Store.replace({ textSize: 'medium' })`);
+    assert.strictEqual(run(ctx, 'Store.get().textSize'), 'medium');
+    assert.deepStrictEqual(run(ctx, 'Object.keys(Scenes.TEXT_SIZES).join()'), 'normal,medium,large,xlarge');
+    const sizes = JSON.parse(run(ctx, 'JSON.stringify(Object.values(Scenes.TEXT_SIZES))'));
+    for (let i = 1; i < sizes.length; i++) {
+        assert.ok(sizes[i].title > sizes[i - 1].title && sizes[i].sub > sizes[i - 1].sub, 'níveis crescentes');
+    }
+    assert.ok(sizes.every(s => s.sub >= s.title), 'o subtexto nunca cresce menos do que o título');
+    assert.deepStrictEqual([sizes[0].title, sizes[0].sub], [1, 1]);                  // "Normal" = aparência original
+    assert.ok(run(ctx, `Scenes.contrast(Scenes.THEMES.contraste.bg, Scenes.THEMES.contraste.sub)`) >= 7);   // AAA para salas grandes
+});
+
 test('formatBytes', () => {
     const { ctx } = load(['utils.js']);
     const f = (v) => run(ctx, `Utils.formatBytes(${v})`);

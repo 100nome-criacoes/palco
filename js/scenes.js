@@ -31,6 +31,19 @@ const Scenes = {
                      subtext: '🕐  Descansa um pouco\n💧  Bebe água\n🧘  Relaxa' }
     },
 
+    /**
+     * Tamanho do texto na TV (multiplicadores do tamanho base, que se lê bem até ~2 m
+     * em subtexto e ~5 m em título num ecrã de 55"). O subtexto cresce mais do que o
+     * título: é onde estão as instruções e é o que primeiro deixa de se ler ao fundo.
+     * `title` também escala o temporizador.
+     */
+    TEXT_SIZES: {
+        normal: { label: 'Normal',       title: 1,   sub: 1 },
+        medium: { label: 'Médio',        title: 1.2, sub: 1.35 },
+        large:  { label: 'Grande',       title: 1.4, sub: 1.7 },
+        xlarge: { label: 'Muito grande', title: 1.8, sub: 2.3 }
+    },
+
     /* ------------------------------ Cores ------------------------------ */
 
     _lum(hex) {
@@ -375,5 +388,6 @@ Scenes.THEMES = {
     coral:     Scenes._makeTheme('Coral',      '#fbd9d0', '#b83212', '#7a3a2b'),
     folha:     Scenes._makeTheme('Folha',      '#d9efc0', '#2f6e0e', '#40621f'),
     noite:     Scenes._makeTheme('Noite',      '#1d2733', '#ffb84d', '#d5dde6'),
-    cinza:     Scenes._makeTheme('Neutro',     '#e9ecef', '#1f2933', '#4b5963')
+    cinza:     Scenes._makeTheme('Neutro',     '#e9ecef', '#1f2933', '#4b5963'),
+    contraste: Scenes._makeTheme('Alto contraste', '#ffffff', '#111827', '#374151')   // para salas grandes
 };

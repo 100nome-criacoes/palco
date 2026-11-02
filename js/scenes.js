@@ -94,7 +94,7 @@ const Scenes = {
         return {
             id: Utils.uid(), name: 'Nova cena', emoji: '📌',
             text: '', subtext: '', theme: null, bg: null,
-            isBreak: false, duration: null, timerMode: null, compactY: null, preset: null
+            isBreak: false, duration: null, timerMode: null, compactFy: null, preset: null
         };
     },
 
@@ -103,7 +103,7 @@ const Scenes = {
         return {
             id: Utils.uid(), name: p.name, emoji: p.emoji,
             text: p.text, subtext: p.subtext, theme: null, bg: null,
-            isBreak: p.isBreak, duration: p.duration, timerMode: null, compactY: null, preset: key
+            isBreak: p.isBreak, duration: p.duration, timerMode: null, compactFy: null, preset: key
         };
     },
 
@@ -357,8 +357,8 @@ const Scenes = {
         if ('timerMode' in patch) {
             s.timerMode = ['big', 'compact', 'hidden'].includes(patch.timerMode) ? patch.timerMode : null;
         }
-        if ('compactY' in patch) {
-            s.compactY = Number.isFinite(patch.compactY) ? Math.round(patch.compactY) : null;
+        if ('compactFy' in patch) {      // posição da barra compacta: fração 0..1, ou null = automática
+            s.compactFy = Number.isFinite(patch.compactFy) ? Utils.clamp(Math.round(patch.compactFy * 10000) / 10000, 0, 1) : null;
         }
         return true;
     },

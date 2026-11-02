@@ -40,9 +40,10 @@
 
         <!-- Pré-visualização da TV -->
         <section class="ctrl-card preview-card">
-            <h2><i class="fas fa-tv"></i> Na TV agora</h2>
+            <h2><i class="fas fa-tv"></i> Na TV agora <small class="h2-sub" id="tvSize"></small></h2>
 
             <div class="mini-tv" id="miniTv" aria-label="Pré-visualização da TV (1080p)">
+                <div class="mini-readout" id="miniReadout"></div>
                 <div class="mini-stage">
                     <div class="mini-board">
                         <div class="mini-header" id="miniHeader">
@@ -75,7 +76,6 @@
 
             <div class="preview-caption">
                 <strong id="stateScene">-</strong>
-                <span id="stateTimer">-</span>
             </div>
         </section>
 
@@ -449,6 +449,7 @@
 <script src="js/notify.js"></script>
 <script src="js/actions.js"></script>
 <script src="js/images.js"></script>
+<script src="js/draggable.js"></script>
 <script src="js/control-preview.js"></script>
 <script src="js/control-gallery.js"></script>
 <script src="js/app-control.js"></script>

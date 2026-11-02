@@ -3,7 +3,7 @@
 Quadro digital para formadores. Duas janelas no mesmo navegador: a **TV** mostra cena, temporizador e vídeos/site; o **Controlo** edita tudo e comanda a TV em tempo real.
 
 [![licença: MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)](LICENSE)
-[![versão: 2.0](https://img.shields.io/badge/vers%C3%A3o-2.0--f1-yellow)](#funcionalidades)
+[![versão: 2.1.2](https://img.shields.io/badge/vers%C3%A3o-2.1.2-yellow)](#funcionalidades)
 
 ![Palco a funcionar](docs/demo.gif)
 
@@ -30,7 +30,7 @@ Formadores em sessões práticas precisam de mostrar instruções, vídeos e um 
 - **Tamanho do texto** ajustável (4 níveis) para salas compridas, com o subtexto a crescer mais do que o título
 - **Vídeos do YouTube e sites incorporados** (Google Slides, apresentações), com som por vídeo, troca 1 ↔ 2 e campos que mostram claramente o que está guardado
 - **Galeria de imagens** — arrasta imagens ou uma pasta; passam na TV com transição suave e controlo remoto (anterior, pausa, seguinte). Ficam só no navegador, numa cópia reduzida
-- **Pré-visualização da TV no controlo**, uma réplica a 1080p com as cores, as posições do temporizador e as miniaturas dos vídeos
+- **Pré-visualização da TV no controlo**, uma réplica do ecrã real da TV (usa o tamanho da janela que ela comunica) com as cores, o temporizador e as miniaturas dos vídeos. O temporizador arrasta-se na miniatura, com coordenadas exatas
 - **Temporizador** que conta pelo relógio (não perde tempo em segundo plano) e publica o estado para o controlo. Cada cena pode mostrá-lo em coluna, em barra ou escondê-lo
 - **Modo pausa** com o tempo em grande, legível à distância
 - **Modo "só tempo"** — esconde vídeos e destaca o temporizador

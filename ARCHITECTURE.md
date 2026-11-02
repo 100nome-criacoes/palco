@@ -59,7 +59,9 @@ O estado da sessão vive **num único sítio**: o objeto `Store`, que persiste e
 
 ### Vistas do controlo
 
-- **`control-preview.js`** — `ControlPreview`. Réplica da TV a 1920x1080, reduzida: usa as mesmas medidas e posições (texto, temporizador na posição guardada ou por baixo do texto, área de media com miniaturas dos vídeos e estado do som). Só desenha.
+- **`control-preview.js`** — `ControlPreview`. Réplica do ecrã **real** da TV: a TV publica o tamanho da sua janela (`Sync.publishDisplay`) e a miniatura usa essa proporção e as mesmas regras de medidas e posições (`metrics()` replica os `clamp()` do `board.css`). Sem TV ligada usa a última medida conhecida, ou 1080p (assumido). O temporizador (coluna e barra) arrasta-se na miniatura, em coordenadas da TV e com os mesmos limites, e a TV acompanha ao vivo. Cada vídeo tem na miniatura os mesmos botões de som e de reprodução das linhas dos vídeos, e as imagens os de anterior, pausa e seguinte com o contador "imagem atual / total".
+
+  As **posições do temporizador** (`bigTimerPos`, `scene.compactFy`) guardam-se como **fração do espaço livre** (0 = encostado ao início, 0,5 = ao centro, 1 = ao fim), por isso se mantêm relativas quando o tamanho do ecrã muda (`Utils.fractionToPx`, `Utils.compactTop`).
 - **`control-gallery.js`** — `ControlGallery`. Importar (arrastar, escolher ficheiros ou pasta, colar), miniaturas, remover, intervalo e comandos anterior / pausa / seguinte.
 
 ### Arranques

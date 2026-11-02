@@ -65,6 +65,26 @@ const Utils = {
         return s % 60 === 0 ? String(s / 60) : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
     },
 
+    /**
+     * Posições como FRAÇÃO do espaço livre (0 = encostado ao início, 0,5 = ao centro, 1 = ao fim).
+     * Assim, se o ecrã mudar de tamanho, o elemento mantém a posição relativa: perto de um lado
+     * continua perto desse lado, ao centro continua ao centro.
+     */
+    fractionToPx(fraction, free) {
+        return Math.max(0, free) * fraction;
+    },
+    pxToFraction(px, free) {
+        return free > 0 ? Math.round(Utils.clamp(px / free, 0, 1) * 10000) / 10000 : 0;
+    },
+
+    /** Barra compacta: topo entre 8 px e (altura - 80 px); a fração é relativa a esse intervalo. */
+    compactTop(fraction, viewportHeight) {
+        return 8 + Utils.fractionToPx(fraction, viewportHeight - 88);
+    },
+    compactFraction(top, viewportHeight) {
+        return Utils.pxToFraction(top - 8, viewportHeight - 88);
+    },
+
     /** 1536 → "1,5 KB" · 8808038 → "8,4 MB" */
     formatBytes(bytes) {
         const n = Math.max(0, Number(bytes) || 0);

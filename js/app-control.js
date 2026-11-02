@@ -52,7 +52,11 @@ const AppControl = {
         this.editingId = state.activeSceneId;
 
         this.buildSwatches();
-        ControlPreview.init();
+        ControlPreview.init({
+            toggleMute: (slot) => this.toggleMute(slot),
+            togglePlay: (slot) => this.togglePlay(slot),
+            gallery: (action) => this.sendToBoard(`gallery:${action}`, {})
+        });
         Store.subscribe((s) => this.onState(s));
         this.bindUi();
         ControlGallery.init((type) => this.sendToBoard(type, {}));
@@ -287,7 +291,7 @@ const AppControl = {
             const $btn = $(`[data-toggle-play="${slot}"]`).prop('disabled', !connected || !hasVideo).attr('title', title);
             $btn.find('i').attr('class', paused ? 'fas fa-play' : 'fas fa-pause');
         }
-        ControlPreview.setPaused(vs);
+        ControlPreview.setPaused(vs, connected);
     },
 
     /* ---------- Campos de link: estado e feedback ---------- */
@@ -376,17 +380,17 @@ const AppControl = {
         $('#connStatus').toggleClass('connected', connected)
             .find('.conn-label').text(connected ? 'Ligado à TV' : 'TV não detetada');
 
+        ControlPreview.setDisplay(Sync.getDisplay());
+
         const t = Sync.getTimerState();
         if (t) {
             ControlPreview.setTime(Utils.formatTime(t.remaining));
             $('#remoteTime').text(Utils.formatTime(t.remaining));
             $('#remoteStatus').text(t.running ? 'a contar' : 'parado').toggleClass('running', t.running);
-            $('#stateTimer').text(Utils.formatTime(t.remaining) + (t.running ? ' ▶' : ' ⏸'));
         } else {
             ControlPreview.setTime(Utils.formatTime(Scenes.timerSeconds(state)));
             $('#remoteTime').text(Utils.formatTime(Scenes.timerSeconds(state)));
             $('#remoteStatus').text('desligado').removeClass('running');
-            $('#stateTimer').text('-');
         }
 
         // Um só botão: "Iniciar" (verde) quando parado, "Pausar" (laranja) quando a contar
@@ -429,6 +433,15 @@ const AppControl = {
 
     commitTexts() {
         this.commit({ text: $('#textInput').val(), subtext: $('#subtextInput').val() });
+    },
+
+    /** Som e reprodução de cada vídeo: usados pelas linhas dos vídeos e pela pré-visualização. */
+    toggleMute(slot) {
+        Store.update(d => { d.videos[slot].muted = !d.videos[slot].muted; });
+    },
+
+    togglePlay(slot) {
+        this.sendToBoard('video:toggle', { slot });
     },
 
     /** Envia um comando à TV, avisando se ela não estiver ligada. */
@@ -688,10 +701,8 @@ const AppControl = {
         });
 
         for (const slot of [1, 2]) {
-            $(`[data-toggle-mute="${slot}"]`).on('click', () => {
-                Store.update(d => { d.videos[slot].muted = !d.videos[slot].muted; });
-            });
-            $(`[data-toggle-play="${slot}"]`).on('click', () => this.sendToBoard('video:toggle', { slot }));
+            $(`[data-toggle-mute="${slot}"]`).on('click', () => this.toggleMute(slot));
+            $(`[data-toggle-play="${slot}"]`).on('click', () => this.togglePlay(slot));
         }
 
         // Troca os vídeos inteiros (URL + som), por isso o mute acompanha cada vídeo

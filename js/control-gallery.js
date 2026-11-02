@@ -103,6 +103,7 @@ const ControlGallery = {
         $('#galleryPrev, #galleryToggle, #galleryNext').prop('disabled', !active);
         $('#galleryCounter').text(active ? `${Math.min(g.index + 1, g.total)} / ${g.total}` : '');
         $('#galleryToggle i').attr('class', active && !g.playing ? 'fas fa-play' : 'fas fa-pause');
+        ControlPreview.setGallery(g, active);
     },
 
     /* ============================================================

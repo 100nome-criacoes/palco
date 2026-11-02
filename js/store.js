@@ -55,7 +55,7 @@ const Store = {
             scales: Object.assign({}, this.DEFAULT_SCALES),   // escala guardada POR modo
             timerDuration: 900,          // segundos (duração global)
             timerMode: 'big',            // 'big' | 'compact' | 'hidden'
-            bigTimerPos: { x: 22, y: null },  // (a posição do temporizador compacto é por cena)
+            bigTimerPos: { fx: 0.0135, fy: null },   // fração do espaço livre; fy null = ao centro (a da barra compacta é por cena)
             textSize: 'large'                 // 'normal' | 'medium' | 'large' | 'xlarge' (ver Scenes.TEXT_SIZES)
         };
     },
@@ -73,6 +73,7 @@ const Store = {
         const str = v => (typeof v === 'string' ? v : '');
         const pick = (v, allowed, fallback) => (allowed.includes(v) ? v : fallback);
         const finite = (v, fallback) => (Number.isFinite(v) ? v : fallback);
+        const unit = (v, fallback) => (Number.isFinite(v) ? Utils.clamp(v, 0, 1) : fallback);
 
         const groups = this._normalizeGroups(src.groups);
         const d = {
@@ -95,8 +96,8 @@ const Store = {
             textSize:      pick(src.textSize, Object.keys(Scenes.TEXT_SIZES), base.textSize),
             timerDuration: (src.timerDuration > 0) ? Math.round(src.timerDuration) : base.timerDuration,
             bigTimerPos: {
-                x: finite(src.bigTimerPos && src.bigTimerPos.x, base.bigTimerPos.x),
-                y: finite(src.bigTimerPos && src.bigTimerPos.y, null)
+                fx: unit(src.bigTimerPos && src.bigTimerPos.fx, base.bigTimerPos.fx),
+                fy: unit(src.bigTimerPos && src.bigTimerPos.fy, null)
             }
         };
 
@@ -159,7 +160,7 @@ const Store = {
             isBreak: s.isBreak === true,
             duration: s.duration > 0 ? Math.round(s.duration) : null,
             timerMode: this.TIMER_MODES.includes(s.timerMode) ? s.timerMode : null,
-            compactY: Number.isFinite(s.compactY) ? Math.round(s.compactY) : null,
+            compactFy: Number.isFinite(s.compactFy) ? Utils.clamp(s.compactFy, 0, 1) : null,
             preset
         };
     },

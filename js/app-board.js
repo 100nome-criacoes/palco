@@ -40,6 +40,7 @@ const AppBoard = {
         Store.subscribe((s) => this.onState(s));
         this.bindUi();
         Sync.startAsBoard((cmd) => this.onCommand(cmd));
+        this.publishDisplay();
     },
 
     /* ============================================================
@@ -84,6 +85,11 @@ const AppBoard = {
     /** Publica o estado do temporizador (e do alarme) para o controlo. */
     publishTimer() {
         if (this._timer) Sync.publishTimerState(Object.assign({}, this._timer, { alarm: this._alarm }));
+    },
+
+    /** Diz ao controlo o tamanho real do ecrã (para a pré-visualização ser exata). */
+    publishDisplay() {
+        Sync.publishDisplay({ width: window.innerWidth, height: window.innerHeight });
     },
 
     /** Liga/desliga o alarme de fim de tempo (ecrã + som). */
@@ -152,6 +158,7 @@ const AppBoard = {
         this.bindKeys();
 
         const relayout = Utils.debounce(() => {
+            this.publishDisplay();
             Media.recalcScale();
             BoardView.renderTimerLayout(Store.get());
         }, 150);
@@ -161,22 +168,31 @@ const AppBoard = {
     },
 
     bindDrag() {
-        // Timer grande: livre (x, y). Só em modo normal (em pausa/“só tempo” fica centrado).
-        Draggable.attach($('#bigTimer .bt-handle')[0], $('#bigTimer')[0], {
+        // Timer grande: livre. Só em modo normal (em pausa/"só tempo" fica centrado).
+        // Grava-se como fração do espaço livre, para acompanhar o tamanho do ecrã.
+        const bigEl = $('#bigTimer')[0];
+        const freeX = () => window.innerWidth - bigEl.offsetWidth;
+        const freeY = () => window.innerHeight - bigEl.offsetHeight;
+        Draggable.attach($('#bigTimer .bt-handle')[0], bigEl, {
             canDrag: () => !$('body').hasClass('break-mode') && !$('body').hasClass('layout-timer'),
-            onMove: ({ x, y }) => $('#bigTimer').css({ left: x + 'px', top: y + 'px', transform: 'none' }),
-            onEnd: ({ x, y }) => Store.update(d => { d.bigTimerPos = { x: Math.round(x), y: Math.round(y) }; })
+            onMove: ({ x, y }) => $('#bigTimer').css({
+                left: Utils.clamp(x, 0, Math.max(0, freeX())) + 'px',
+                top: Utils.clamp(y, 0, Math.max(0, freeY())) + 'px',
+                transform: 'none'
+            }),
+            onEnd: ({ x, y }) => Store.update(d => {
+                d.bigTimerPos = { fx: Utils.pxToFraction(x, freeX()), fy: Utils.pxToFraction(y, freeY()) };
+            })
         });
 
         // Timer compacto: só vertical, e a posição é guardada NA CENA em direto.
         // Duplo clique na pega volta à posição automática (por baixo do texto).
-        const clampY = (y) => Utils.clamp(y, 8, Math.max(8, window.innerHeight - 80));
         Draggable.attach($('#compactTimer .ct-handle')[0], $('#compactTimer')[0], {
-            onMove: ({ y }) => $('#compactTimer').css('top', clampY(y) + 'px'),
-            onEnd: ({ y }) => Store.update(d => Scenes.update(d, d.activeSceneId, { compactY: clampY(y) }))
+            onMove: ({ y }) => $('#compactTimer').css('top', Utils.clamp(y, 8, Math.max(8, window.innerHeight - 80)) + 'px'),
+            onEnd: ({ y }) => Store.update(d => Scenes.update(d, d.activeSceneId, { compactFy: Utils.compactFraction(y, window.innerHeight) }))
         });
         $('#compactTimer .ct-handle').on('dblclick', () => {
-            Store.update(d => Scenes.update(d, d.activeSceneId, { compactY: null }));
+            Store.update(d => Scenes.update(d, d.activeSceneId, { compactFy: null }));
         });
     },
 

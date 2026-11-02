@@ -14,6 +14,7 @@ const Sync = {
     KEY_TIMER:     APP_INFO.key('timer_state'),
     KEY_GALLERY:   APP_INFO.key('gallery_state'),
     KEY_VIDEOS:    APP_INFO.key('videos_state'),
+    KEY_DISPLAY:   APP_INFO.key('display'),
     CHANNEL_NAME:  APP_INFO.slug,
     BOARD_WINDOW:  APP_INFO.slug + '-tv',
     CONTROL_WINDOW: APP_INFO.slug + '-control',
@@ -108,6 +109,11 @@ const Sync = {
         } catch (e) {}
     },
 
+    /** A TV publica o tamanho da sua janela (px CSS), para a pré-visualização do controlo ser exata. */
+    publishDisplay({ width, height }) {
+        try { localStorage.setItem(this.KEY_DISPLAY, JSON.stringify({ width, height, ts: Date.now() })); } catch (e) {}
+    },
+
     /** A TV publica que vídeos estão em pausa (para o botão do controlo mostrar play/pausa). */
     publishVideoState({ paused }) {
         try { localStorage.setItem(this.KEY_VIDEOS, JSON.stringify({ paused, ts: Date.now() })); } catch (e) {}
@@ -146,6 +152,15 @@ const Sync = {
         let raw = null;
         try { raw = localStorage.getItem(this.KEY_GALLERY); } catch (e) {}
         return (raw && this._safeParse(raw)) || null;
+    },
+
+    /** { width, height } da janela da TV, ou null se a TV não está ligada. */
+    getDisplay() {
+        if (!this.isBoardConnected()) return null;
+        let raw = null;
+        try { raw = localStorage.getItem(this.KEY_DISPLAY); } catch (e) {}
+        const d = raw && this._safeParse(raw);
+        return d && d.width > 0 && d.height > 0 ? { width: d.width, height: d.height } : null;
     },
 
     /** { paused: { 1, 2 } } ou null se a TV não está ligada. */

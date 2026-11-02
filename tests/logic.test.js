@@ -123,11 +123,13 @@ test('posição da barra compacta é por cena (null = automática)', () => {
     const { ctx } = load(base);
     run(ctx, 'Store.init()');
     const a = run(ctx, 'Store.get().groups[0].scenes[0].id'), b = run(ctx, 'Store.get().groups[0].scenes[1].id');
-    run(ctx, `Store.update(d => Scenes.update(d, '${a}', { compactY: 240.4 }))`);
-    assert.strictEqual(run(ctx, `Scenes.locate(Store.get(), '${a}').scene.compactY`), 240);
-    assert.strictEqual(run(ctx, `Scenes.locate(Store.get(), '${b}').scene.compactY`), null);
-    run(ctx, `Store.update(d => Scenes.update(d, '${a}', { compactY: null }))`);
-    assert.strictEqual(run(ctx, `Scenes.locate(Store.get(), '${a}').scene.compactY`), null);
+    run(ctx, `Store.update(d => Scenes.update(d, '${a}', { compactFy: 0.31416 }))`);
+    assert.strictEqual(run(ctx, `Scenes.locate(Store.get(), '${a}').scene.compactFy`), 0.3142);
+    assert.strictEqual(run(ctx, `Scenes.locate(Store.get(), '${b}').scene.compactFy`), null);
+    run(ctx, `Store.update(d => Scenes.update(d, '${a}', { compactFy: 7 }))`);               // fora do intervalo: prende a 0..1
+    assert.strictEqual(run(ctx, `Scenes.locate(Store.get(), '${a}').scene.compactFy`), 1);
+    run(ctx, `Store.update(d => Scenes.update(d, '${a}', { compactFy: null }))`);
+    assert.strictEqual(run(ctx, `Scenes.locate(Store.get(), '${a}').scene.compactFy`), null);
 });
 
 test('nome e ícone de cenas novas persistem', () => {
@@ -306,10 +308,10 @@ test('exportar → importar devolve EXATAMENTE o mesmo estado (nada se perde)', 
         d.videos[1] = { url: 'https://youtu.be/aaaaaaaaaaa', muted: false };
         d.videos[2] = { url: 'https://youtu.be/bbbbbbbbbbb', muted: true };
         d.siteUrl = 'https://exemplo.pt/slides';
-        d.scales.single = 'cover'; d.bigTimerPos = { x: 40, y: 200 };
+        d.scales.single = 'cover'; d.bigTimerPos = { fx: 0.25, fy: 0.4 };
         const g = d.groups[0];
         g.scenes[1].duration = 630; g.scenes[1].theme = 'ceu';
-        g.scenes[2].bg = '#123456'; g.scenes[3].compactY = 300;
+        g.scenes[2].bg = '#123456'; g.scenes[3].compactFy = 0.35;
         Scenes.createGroup(d, 'Nível 2'); Scenes.duplicateGroup(d, g.id);
     })`);
     const exported = run(ctx, 'Store.exportJson()');
@@ -328,7 +330,7 @@ test('ficheiro editado à mão é reparado em vez de rebentar', () => {
     const messy = {
         version: 6, layout: 'banana', timerMode: 'x', timerDuration: -5,
         videos: { 1: 'texto solto', 2: null }, scales: { double: 'zzz' },
-        groups: [{ name: '', scenes: [{ name: '  ', bg: 'red', theme: 'nao-existe', duration: 'abc', compactY: 'x' }, 42, null] }],
+        groups: [{ name: '', scenes: [{ name: '  ', bg: 'red', theme: 'nao-existe', duration: 'abc', compactFy: 'x' }, 42, null] }],
         activeGroupId: 'nao-existe', activeSceneId: 'nao-existe'
     };
     run(ctx, `Store.replace(${JSON.stringify(messy)})`);
@@ -341,7 +343,7 @@ test('ficheiro editado à mão é reparado em vez de rebentar', () => {
     assert.strictEqual(s.groups[0].name, 'Grupo');
     assert.strictEqual(s.groups[0].scenes.length, 1);
     const sc = s.groups[0].scenes[0];
-    assert.deepStrictEqual([sc.name, sc.bg, sc.theme, sc.duration, sc.compactY], ['Cena', null, null, null, null]);
+    assert.deepStrictEqual([sc.name, sc.bg, sc.theme, sc.duration, sc.compactFy], ['Cena', null, null, null, null]);
     assert.strictEqual(s.activeSceneId, sc.id);
 });
 
@@ -516,6 +518,80 @@ test('tamanho do texto: padrão "Grande", valores inválidos corrigem-se, e o su
     assert.ok(sizes.every(s => s.sub >= s.title), 'o subtexto nunca cresce menos do que o título');
     assert.deepStrictEqual([sizes[0].title, sizes[0].sub], [1, 1]);                  // "Normal" = aparência original
     assert.ok(run(ctx, `Scenes.contrast(Scenes.THEMES.contraste.bg, Scenes.THEMES.contraste.sub)`) >= 7);   // AAA para salas grandes
+});
+
+test('pré-visualização: tipografia calculada como os clamp() da TV, para qualquer largura', () => {
+    const { ctx } = load(['app-info.js', 'utils.js', 'control-preview.js']);
+    const m = (w) => JSON.parse(run(ctx, `JSON.stringify(ControlPreview.metrics(${w}))`));
+    const full = m(1920);                                   // máximos
+    assert.deepStrictEqual([full.title, full.sub, full.breakTitle, full.breakSub, full.hero], [57.6, 24, 41.6, 24, 224]);
+    const hd = m(1366);                                     // portátil: vw manda
+    assert.ok(Math.abs(hd.title - 54.64) < 0.01 && Math.abs(hd.sub - 20.49) < 0.01 && hd.hero === 224);
+    const small = m(1024);                                  // janela pequena: mínimos nos subtextos
+    assert.ok(Math.abs(small.title - 40.96) < 0.01);
+    assert.strictEqual(small.sub, 16.8);
+    assert.ok(Math.abs(small.hero - 184.32) < 0.01);
+    const tiny = m(400);
+    assert.deepStrictEqual([tiny.title, tiny.breakTitle, tiny.hero], [32, 28.8, 112]);
+});
+
+test('tamanho real da TV publicado para o controlo (só com a TV ligada)', () => {
+    const { ctx } = load(['app-info.js', 'utils.js', 'sync.js']);
+    assert.strictEqual(run(ctx, 'Sync.getDisplay()'), null);
+    run(ctx, `Sync._beat(); Sync.publishDisplay({ width: 1366, height: 768 });`);
+    assert.deepStrictEqual(JSON.parse(run(ctx, 'JSON.stringify(Sync.getDisplay())')), { width: 1366, height: 768 });
+    run(ctx, `Sync.publishDisplay({ width: 0, height: 0 })`);
+    assert.strictEqual(run(ctx, 'Sync.getDisplay()'), null);                  // medidas inválidas ignoram-se
+    run(ctx, `localStorage.removeItem(Sync.KEY_HEARTBEAT)`);
+    assert.strictEqual(run(ctx, 'Sync.getDisplay()'), null);
+});
+
+test('posições como fração do espaço livre: mantêm-se relativas quando o ecrã muda', () => {
+    const { ctx } = load(['utils.js']);
+    const f2p = (f, free) => run(ctx, `Utils.fractionToPx(${f}, ${free})`);
+    const p2f = (px, free) => run(ctx, `Utils.pxToFraction(${px}, ${free})`);
+    assert.strictEqual(f2p(0.5, 1000), 500);
+    assert.strictEqual(p2f(500, 1000), 0.5);
+    assert.strictEqual(p2f(2000, 1000), 1);                       // fora do espaço: prende
+    assert.strictEqual(p2f(-5, 1000), 0);
+    assert.strictEqual(p2f(10, 0), 0);                            // sem espaço livre
+    const el = 300;                                               // largura do temporizador
+    const place = (W, frac) => f2p(frac, W - el);
+    for (const W of [1920, 1366, 1024, 3840]) {
+        // ao centro continua ao centro (centro do elemento = centro do ecrã)
+        assert.ok(Math.abs(place(W, 0.5) + el / 2 - W / 2) < 1e-6, `centro a ${W}`);
+        // encostado à esquerda / à direita continua encostado
+        assert.strictEqual(place(W, 0), 0);
+        assert.ok(Math.abs(place(W, 1) + el - W) < 1e-6, `direita a ${W}`);
+    }
+    // perto da esquerda: guardada a 1920 px, a distância ao lado esquerdo escala com o ecrã
+    const fx = p2f(100, 1920 - el);
+    assert.ok(place(3840, fx) > place(1920, fx) && place(1366, fx) < place(1920, fx));
+    // barra compacta: entre 8 px e (altura - 80)
+    const c = (top, h) => run(ctx, `Utils.compactFraction(${top}, ${h})`);
+    assert.strictEqual(c(8, 1080), 0);
+    assert.strictEqual(c(1000, 1080), 1);
+    assert.strictEqual(run(ctx, `Utils.compactTop(${c(500, 1080)}, 1080)`) | 0, 500);
+    assert.ok(run(ctx, `Utils.compactTop(0.5, 720)`) < run(ctx, `Utils.compactTop(0.5, 1080)`));
+});
+
+test('bigTimerPos: frações inválidas são corrigidas; posições antigas em px deixam de ser lidas', () => {
+    const { ctx } = load(base);
+    run(ctx, 'Store.init()');
+    run(ctx, `Store.replace({ bigTimerPos: { fx: 9, fy: -3 } })`);
+    assert.deepStrictEqual(JSON.parse(run(ctx, 'JSON.stringify(Store.get().bigTimerPos)')), { fx: 1, fy: 0 });
+    run(ctx, `Store.replace({ bigTimerPos: { x: 22, y: 540 } })`);                // formato antigo: ignora
+    assert.deepStrictEqual(JSON.parse(run(ctx, 'JSON.stringify(Store.get().bigTimerPos)')), { fx: 0.0135, fy: null });
+});
+
+test('pré-visualização: contador das imagens ("3 / 12", ou "– / 12" sem TV)', () => {
+    const { ctx } = load(['app-info.js', 'utils.js', 'control-preview.js']);
+    const t = (g, n) => run(ctx, `ControlPreview.counterText(${JSON.stringify(g)}, ${n})`);
+    assert.strictEqual(t(null, 12), '– / 12');
+    assert.strictEqual(t({ index: 0, total: 12 }, 12), '1 / 12');
+    assert.strictEqual(t({ index: 2, total: 12 }, 12), '3 / 12');
+    assert.strictEqual(t({ index: 40, total: 12 }, 12), '12 / 12');       // nunca passa do total
+    assert.strictEqual(t({ index: 0, total: 0 }, 5), '– / 5');
 });
 
 test('formatBytes', () => {

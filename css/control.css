@@ -597,7 +597,6 @@
 
 /* Linha Iniciar | Pausar | Redefinir | Campainha: os dois primeiros esticam,
    os dois últimos são só ícone (largura fixa) e nunca saem da área. */
-.remote-controls { flex-wrap: nowrap; }
 .remote-controls .ctrl-btn.big {
     min-width: 0;
     padding-left: 10px;
@@ -661,8 +660,9 @@
     --u: calc(100cqw / 1920);
     container-type: inline-size;
     position: relative;
+    width: 100%;
     aspect-ratio: 16 / 9;
-    margin-bottom: 12px;
+    margin: 0 auto 12px;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: inset 0 0 0 1px rgba(0,0,0,.1);
@@ -681,7 +681,7 @@
 }
 .mini-header { width: 100%; max-width: calc(1200 * var(--ts, 1) * var(--u)); margin: 0 auto; text-align: center; }
 .mini-title {
-    font-size: calc(57.6 * var(--ts, 1) * var(--u));
+    font-size: calc(var(--m-title, 57.6) * var(--ts, 1) * var(--u));
     font-weight: 800;
     line-height: 1.15;
     letter-spacing: calc(-.5 * var(--u));
@@ -692,7 +692,7 @@
 .mini-sub {
     max-width: calc(900 * var(--ts, 1) * var(--u));
     margin: calc(12 * var(--u)) auto 0;
-    font-size: calc(24 * var(--ts-sub, 1) * var(--u));
+    font-size: calc(var(--m-sub, 24) * var(--ts-sub, 1) * var(--u));
     font-weight: 600;
     line-height: 1.3;
     color: var(--scene-sub);
@@ -712,8 +712,8 @@
 }
 .mini-tv.is-break .mini-header,
 .mini-tv.is-timer .mini-header { max-width: calc(900 * var(--ts, 1) * var(--u)); }
-.mini-tv.is-break .mini-title { font-size: calc(41.6 * var(--ts, 1) * var(--u)); }
-.mini-tv.is-break .mini-sub { max-width: calc(700 * var(--ts, 1) * var(--u)); margin-top: calc(14 * var(--u)); font-size: calc(24 * var(--ts-sub, 1) * var(--u)); }
+.mini-tv.is-break .mini-title { font-size: calc(var(--m-btitle, 41.6) * var(--ts, 1) * var(--u)); }
+.mini-tv.is-break .mini-sub { max-width: calc(700 * var(--ts, 1) * var(--u)); margin-top: calc(14 * var(--u)); font-size: calc(var(--m-bsub, 24) * var(--ts-sub, 1) * var(--u)); }
 
 /* Área de media */
 .mini-media {
@@ -747,14 +747,6 @@
 .mini-slot.empty { background: rgba(255,255,255,.4); border: 1px dashed rgba(0,0,0,.2); }
 .mini-slot.site { background: rgba(255,255,255,.55); color: var(--scene-sub); }
 .mini-slot.site span { font-size: calc(40 * var(--u)); font-weight: 700; }
-.mini-vol {
-    position: absolute;
-    left: calc(20 * var(--u));
-    bottom: calc(16 * var(--u));
-    font-size: calc(48 * var(--u));
-    color: #fff;
-    text-shadow: 0 0 3px rgba(0,0,0,.7);
-}
 
 /* Temporizadores */
 .mini-time { font-weight: 800; font-variant-numeric: tabular-nums; color: var(--scene-timer); }
@@ -806,7 +798,7 @@
     box-shadow: none;
 }
 .mini-tv.is-break .mini-big .mini-time,
-.mini-tv.is-timer .mini-big .mini-time { font-size: calc(224 * var(--u)); letter-spacing: calc(4 * var(--u)); }
+.mini-tv.is-timer .mini-big .mini-time { font-size: calc(var(--m-hero, 224) * var(--u)); letter-spacing: calc(4 * var(--u)); }
 .mini-tv.is-break .mini-label,
 .mini-tv.is-timer .mini-label { font-size: calc(17.6 * var(--u)); letter-spacing: calc(2 * var(--u)); margin-bottom: calc(14 * var(--u)); }
 .mini-tv.is-break .mini-big .mini-ctrls,
@@ -1037,7 +1029,7 @@
 /* Pré-visualização presa ao topo da coluna: o resto desliza por baixo */
 .preview-caption {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 10px;
     font-size: .8rem;
     color: #666;
@@ -1067,24 +1059,6 @@
 .segmented.small { padding: 3px; }
 .segmented.small button { padding: 6px 6px; font-size: .74rem; gap: 4px; }
 
-/* Pré-visualização: vídeo em pausa */
-.mini-slot.paused::after {
-    content: "\f04c";
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    position: absolute;
-    top: calc(14 * var(--u));
-    right: calc(14 * var(--u));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: calc(64 * var(--u));
-    height: calc(64 * var(--u));
-    border-radius: 50%;
-    background: rgba(0,0,0,.6);
-    color: #fff;
-    font-size: calc(28 * var(--u));
-}
 
 /* =====================================================================
  * Rodapé
@@ -1151,3 +1125,72 @@
 }
 .text-size .segmented { flex: 1; }
 .text-size .segmented button { padding: 3px 6px; line-height: 1.2; font-weight: 800; }
+
+/* Arrastar o temporizador na miniatura (coordenadas da TV) */
+.mini-big.draggable,
+.mini-compact.draggable { cursor: grab; touch-action: none; user-select: none; }
+.mini-big.draggable:active,
+.mini-compact.draggable:active { cursor: grabbing; }
+.mini-big.draggable:hover,
+.mini-compact.draggable:hover { outline: 2px dashed rgba(0,0,0,.35); outline-offset: 3px; }
+
+.mini-readout {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    z-index: 5;
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: rgba(17,24,39,.85);
+    color: #fff;
+    font-size: .68rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .12s;
+}
+.mini-readout.on { opacity: 1; }
+
+/* Controlos de cada vídeo dentro da pré-visualização (tamanho real, não escalado) */
+.mini-ctls {
+    position: absolute;
+    left: 6px;
+    bottom: 6px;
+    display: flex;
+    gap: 5px;
+}
+.mini-ctl {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(17,24,39,.72);
+    color: #fff;
+    font-size: .64rem;
+    cursor: pointer;
+    transition: background .15s, transform .15s;
+}
+.mini-ctl:hover:not(:disabled) { background: rgba(17,24,39,.95); transform: scale(1.08); }
+.mini-ctl:disabled { opacity: .5; cursor: not-allowed; }
+.mini-play.is-paused { background: var(--orange); }       /* parado: destaca-se */
+.mini-play.is-paused:hover:not(:disabled) { background: var(--orange-dark); }
+
+/* Imagens na pré-visualização: contador "3 / 12" ao lado dos controlos */
+.mini-slot.gallery .mini-ctls { align-items: center; }
+.mini-gal-counter {
+    display: flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 9px;
+    border-radius: 12px;
+    background: rgba(17,24,39,.72);
+    color: #fff;
+    font-size: .68rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}

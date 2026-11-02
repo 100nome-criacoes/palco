@@ -37,7 +37,7 @@ const BoardView = {
         $('#compactTimer').toggleClass('hidden', mode !== 'compact');
 
         // Barra compacta: sem posição definida para esta cena, fica logo por baixo do texto
-        const auto = mode === 'compact' && scene.compactY === null;
+        const auto = mode === 'compact' && scene.compactFy === null;
         $('body').toggleClass('compact-auto', auto);
 
         if (mode === 'compact') {
@@ -49,23 +49,24 @@ const BoardView = {
                 document.body.style.setProperty('--compact-h', ($('#compactTimer')[0].offsetHeight || 50) + 'px');
                 top = document.querySelector('.board-header').getBoundingClientRect().bottom + gap;
             } else {
-                top = Utils.clamp(scene.compactY, 8, Math.max(8, window.innerHeight - 80));
+                top = Utils.compactTop(scene.compactFy, window.innerHeight);
             }
             $('#compactTimer').css('top', top + 'px');
         }
         if (mode === 'big') this._applyBigPos(state.bigTimerPos);
     },
 
+    /** Posição do temporizador em coluna: frações do espaço livre, por isso acompanha o tamanho do ecrã. */
     _applyBigPos(pos) {
         const $el = $('#bigTimer');
-        if (pos.y === null) {
-            $el.css({ left: pos.x + 'px', top: '50%', transform: 'translateY(-50%)' });
+        const el = $el[0];
+        const left = Utils.fractionToPx(pos.fx, window.innerWidth - el.offsetWidth);
+        if (pos.fy === null) {
+            $el.css({ left: left + 'px', top: '50%', transform: 'translateY(-50%)' });
             return;
         }
-        const el = $el[0];
-        const x = Utils.clamp(pos.x, 0, Math.max(0, window.innerWidth - el.offsetWidth));
-        const y = Utils.clamp(pos.y, 0, Math.max(0, window.innerHeight - el.offsetHeight));
-        $el.css({ left: x + 'px', top: y + 'px', transform: 'none' });
+        const top = Utils.fractionToPx(pos.fy, window.innerHeight - el.offsetHeight);
+        $el.css({ left: left + 'px', top: top + 'px', transform: 'none' });
     },
 
     /** Números e botões dos dois temporizadores. */
